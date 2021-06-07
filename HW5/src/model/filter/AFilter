@@ -1,0 +1,24 @@
+package model.filter;
+
+import model.IImage;
+
+/**
+ * The abstract class for image filters which contains shared properties between diferent
+ * filters.
+ */
+public abstract class AFilter implements IFilter {
+
+  protected double[][] filterMatrix;
+
+  @Override
+  public void apply(IImage image) {
+    // find the center of the kernel and place it at a particular pixel
+
+    // use iteration to do this for each pixel in the color channel
+    // (either change rgb all at once or separately)
+
+    // create deep copies of pixels so that we can access/reference neighbors
+
+    // may need to create a helper method that checks the neighbors
+  }
+}
