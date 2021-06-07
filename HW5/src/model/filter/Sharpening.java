@@ -1,0 +1,27 @@
+package model.filter;
+
+import model.IImage;
+
+/**
+ * A filter that sharpens an image by accentuating the edges (the boundaries between regions of high
+ * contrast).
+ */
+public class Sharpening extends AFilter {
+
+  /**
+   * Constructs an {@code Sharpening} object.
+   */
+  public Sharpening() {
+    this.filterMatrix = new double[][]{
+        {-0.125, -0.125, -0.125, -0.125, -0.125},
+        {-0.125, 0.25, 0.25, 0.25, -0.125},
+        {-0.125, 0.25, 1, 0.25, -0.125},
+        {-0.125, 0.25, 0.25, 0.25, -0.125},
+        {-0.125, -0.125, -0.125, -0.125, -0.125}};
+  }
+
+  @Override
+  public void apply(IImage image) {
+    //TODO watch out for overflow/underflow
+  }
+}
