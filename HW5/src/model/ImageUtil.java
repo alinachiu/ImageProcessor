@@ -1,15 +1,23 @@
 package model;
 
+import model.colorTransformation.Grayscale;
+import model.colorTransformation.IColorTransformation;
+import model.exports.IExport;
+import model.exports.PPMExport;
+import java.io.IOException;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
-import model.colorTransformation.IColorTransformation;
-import model.colorTransformation.Sepia;
+import model.filter.Blur;
 import model.filter.IFilter;
+import model.filter.Sharpening;
+import model.imageCreator.CheckboardImageCreator;
+import model.imageCreator.IImageCreator;
+import model.imageRepresentation.IImage;
+import model.imageRepresentation.PPMImage;
+import model.imageRepresentation.Pixel;
 
-// TODO file export function to export images, filter, create checkerboard,
-//  uml (generate on desktop), README, tests with two new images minimum, don't
-//  forget to cite the images
+// TODO uml (generate on desktop), README
 
 /**
  * This class contains utility methods to read a PPM image from file and simply print its contents.
@@ -51,11 +59,11 @@ public class ImageUtil {
       System.out.println("Invalid PPM file: plain RAW file should begin with P3");
     }
     int width = sc.nextInt();
-    System.out.println("Width of image: " + width);
+//     System.out.println("Width of image: " + width);
     int height = sc.nextInt();
-    System.out.println("Height of image: " + height);
+//     System.out.println("Height of image: " + height);
     int maxValue = sc.nextInt();
-    System.out.println("Maximum value of a color in this file (usually 256): " + maxValue);
+//     System.out.println("Maximum value of a color in this file (usually 256): " + maxValue);
 
     Pixel[][] pixels = new Pixel[height][width];
 
@@ -64,7 +72,7 @@ public class ImageUtil {
         int r = sc.nextInt();
         int g = sc.nextInt();
         int b = sc.nextInt();
-        System.out.println("Color of pixel (" + j + "," + i + "): " + r + "," + g + "," + b);
+//         System.out.println("Color of pixel (" + j + "," + i + "): " + r + "," + g + "," + b);
         pixels[i][j] = new Pixel(i, j, r, g, b);
       }
     }
@@ -79,9 +87,24 @@ public class ImageUtil {
     if (args.length > 0) {
       filename = args[0];
     } else {
-      filename = "res/Koala.ppm";
+      filename = "res/puppy.ppm";
     }
 
-    ImageUtil.readPPM(filename);
+    IImageCreator checkerboard = new CheckboardImageCreator(4, 4);
+
+    IImage i = new PPMImage(filename);
+
+    IFilter filter = new Sharpening();
+    IFilter blur = new Blur();
+
+    IExport koalaExport = new PPMExport(blur.apply(i));
+
+    try {
+      koalaExport.export();
+    } catch (IOException e) {
+
+    }
+
+    //ImageUtil.readPPM(filename);
   }
 }

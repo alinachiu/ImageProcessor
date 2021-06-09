@@ -1,9 +1,5 @@
 package model.colorTransformation;
 
-import model.IImage;
-import model.IPixel;
-import model.Pixel;
-
 /**
  * Converts a color image into a grayscale image. A grayscale is composed only of shades of grey (if
  * the red, green, and blue values are the same).

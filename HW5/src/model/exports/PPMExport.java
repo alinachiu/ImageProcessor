@@ -1,10 +1,10 @@
-package exports;
+package model.exports;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import model.IImage;
-import model.IPixel;
+import model.imageRepresentation.IImage;
+import model.imageRepresentation.IPixel;
 
 /**
  * Represents a class which manages a given {@code IImage} and creates a file associated with it.

@@ -1,9 +1,9 @@
-package managers;
+package model.managers;
 
 import java.io.File;
-import model.IImage;
+import model.imageRepresentation.IImage;
 import model.ImageUtil;
-import model.PPMImage;
+import model.imageRepresentation.PPMImage;
 
 /**
  * Represents a class that manages the given input file and returns the file's

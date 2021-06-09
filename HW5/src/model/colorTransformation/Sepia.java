@@ -1,7 +1,5 @@
 package model.colorTransformation;
 
-import model.IImage;
-
 /**
 * Converts an image into a sepia tone which is done using a linear color transformation.
 */
