@@ -1,0 +1,14 @@
+package exports;
+
+import java.io.IOException;
+
+/**
+ * Represents a class that exports a given image into its correct file type.
+ */
+public interface IExport {
+
+  /**
+   * Exports an image into the correct format.
+   */
+  void export() throws IOException;
+}
