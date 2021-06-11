@@ -7,10 +7,14 @@ import model.exports.FailingWriter;
 import model.exports.IExport;
 import model.exports.PPMExport;
 import model.creator.CheckboardImageCreator;
+import model.filter.Blur;
+import model.filter.IFilter;
 import model.image.IImage;
 import model.image.IPixel;
 import model.image.PPMImage;
 import model.image.Pixel;
+import model.managers.IOManager;
+import model.managers.InputFilenameManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,6 +110,21 @@ public class IExportTest {
   }
 
   @Test
+  public void testExportBlurSampleImage() throws IOException {
+    Writer writer = new StringWriter();
+    assertEquals("", writer.toString());
+    IFilter blur = new Blur();
+    IImage blurSampleImage = blur.apply(sampleImage);
+    IExport export = new PPMExport(blurSampleImage, writer);
+
+    export.export();
+
+    assertEquals("P3 4 3 255\n"
+        + "46 55 31 54 91 63 62 68 113 51 40 90 61 73 41 72 121 84 82 90 "
+        + "150 68 53 120 46 55 31 54 91 63 62 68 113 51 40 90 ", writer.toString());
+  }
+
+  @Test
   public void testExportCheckerboardImage() throws IOException {
     // tests to make sure the writer starts as empty
     assertEquals("", stringWriterCheckerboard.toString());
@@ -167,6 +186,24 @@ public class IExportTest {
         + "255 0 0 255 0 0 255 0 0 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 0 0 255 0 0 255 0 0 255 "
         + "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 0 0 255 0 0 255 0 0 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
         + "255 0 0 255 0 0 255 0 0 255 0 0 ", writer.toString());
+  }
+
+  @Test
+  public void testExportImageAndThenReImportShouldHaveSame2DArrayContent() throws IOException {
+    IImage image = new PPMImage("res/Checkerboard.ppm");
+    IExport export = new PPMExport(image);
+
+    export.export();
+
+    // reimport image and check to see if the old and new are the same
+    IOManager manager = new InputFilenameManager("res/CheckerboardNew.ppm");
+    IImage newImage = manager.apply();
+
+    for (int i = 0; i < image.getImage().length; i++) {
+      for (int j = 0; j < image.getImage()[i].length; j++) {
+        assertEquals(image.getImage()[i][j], newImage.getImage()[i][j]);
+      }
+    }
   }
 
 }
