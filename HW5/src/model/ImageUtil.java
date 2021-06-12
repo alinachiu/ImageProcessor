@@ -26,9 +26,9 @@ public class ImageUtil {
    *
    * @param filename the path of the file.
    * @return a 2D array of pixels that represents a PPM image
-   * @throws IllegalArgumentException if the given filename is null
+   * @throws IllegalArgumentException if the given filename is null or the file is not found
    */
-  public static Pixel[][] readPPM(String filename) {
+  public static Pixel[][] readPPM(String filename) throws IllegalArgumentException {
     if (filename == null) {
       throw new IllegalArgumentException("No valid filename given.");
     }
@@ -37,8 +37,7 @@ public class ImageUtil {
     try {
       sc = new Scanner(new FileInputStream(filename));
     } catch (FileNotFoundException e) {
-      System.out.println("File " + filename + " not found!");
-      return null;
+      throw new IllegalArgumentException("File " + filename + " not found!");
     }
     StringBuilder builder = new StringBuilder();
     //read the file line by line, and populate a string. This will throw away any comment lines
