@@ -24,7 +24,7 @@ public class ImageUtilTest {
     u.readPPM(null);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testNonexistentFile() {
     assertArrayEquals(null, u.readPPM("res/Checker.ppm"));
   }
