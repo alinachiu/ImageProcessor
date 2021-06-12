@@ -1,14 +1,11 @@
 package model;
 
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import model.color.Grayscale;
 import model.color.IColorTransformation;
 import model.color.Sepia;
-import java.util.Scanner;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import model.exports.IExport;
-import model.exports.PPMExport;
 import model.filter.Blur;
 import model.filter.IFilter;
 import model.filter.Sharpening;
