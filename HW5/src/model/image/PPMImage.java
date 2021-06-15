@@ -15,7 +15,7 @@ public class PPMImage implements IImage {
   private final String filename;
 
   /**
-   * Constructs a {@code Image} object based on a given file for the purpose of loading an image.
+   * Constructs a {@code PPMImage} object based on a given file for the purpose of loading an image.
    *
    * @param filename the name of a given file
    * @throws IllegalArgumentException if any class invariants are violated or if any argument is
@@ -27,14 +27,15 @@ public class PPMImage implements IImage {
     }
     this.filename = filename;
     this.image = ImageUtil.readPPM(this.filename);
+
     if (this.image == null) {
       throw new IllegalArgumentException("The file doesn't exist.");
     }
   }
 
   /**
-   * Constructs a {@code Image} object with the given name based on a given set of pixels for the
-   * purpose of creating an imae.ge
+   * Constructs a {@code PPMImage} object with the given name based on a given set of pixels for the
+   * purpose of creating an image.
    *
    * @param image    the image to be loaded
    * @param filename the name of the image

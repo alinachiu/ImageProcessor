@@ -1,8 +1,11 @@
 package model.exports;
 
-import java.io.FileWriter;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import javax.imageio.ImageIO;
+import model.image.IPixel;
 import model.image.IImage;
 
 /**
@@ -12,7 +15,6 @@ import model.image.IImage;
 public class JPEGExport implements IExport {
 
   private final IImage image;
-  private final Writer wr;
 
   /**
    * Constructs a {@code JPEGExport} object with a default Writer for writing a file.
@@ -26,26 +28,26 @@ public class JPEGExport implements IExport {
       throw new IllegalArgumentException("Cannot have a null image.");
     }
     this.image = image;
-    String[] withoutExtension = image.getFilename().toLowerCase().split(".jpeg");
-    this.wr = new FileWriter(withoutExtension[0] + "New" + ".jpeg");
-  }
-
-  /**
-   * Constructs a {@code JPEGOutputFileManager} object with a given Writer.
-   *
-   * @param image the given image to be converted into a file
-   * @throws IllegalArgumentException if any argument is null
-   */
-  public JPEGExport(IImage image, Writer wr) {
-    if (image == null || wr == null) {
-      throw new IllegalArgumentException("Cannot have any null arguments.");
-    }
-    this.image = image;
-    this.wr = wr;
   }
 
   @Override
   public void export() throws IOException {
-    // TODO implement next time
+    BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+    File file = new File("newImage.jpeg");
+
+    IPixel[][] imageGrid = image.getImage();
+
+    for (int i = 0; i < image.getHeight(); i++) {
+      for (int j = 0; j < image.getWidth(); j++) {
+        IPixel currPix = imageGrid[i][j];
+        int red = currPix.getRed();
+        int green = currPix.getGreen();
+        int blue = currPix.getBlue();
+        int rgb = (red << 16 | green << 8 | blue);
+        img.setRGB(j, i, rgb);
+      }
+    }
+
+    ImageIO.write(img, "jpeg", file);
   }
 }

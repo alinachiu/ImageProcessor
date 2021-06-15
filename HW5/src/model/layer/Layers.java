@@ -2,6 +2,7 @@ package model.layer;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.IPhotoOperations;
 import model.image.IImage;
 
 /**
@@ -17,14 +18,6 @@ public class Layers implements ILayer {
    */
   public Layers() {
     this.layers = new ArrayList<>();
-  }
-
-  @Override
-  public void addImageLayer(IImage image) throws IllegalArgumentException {
-    if (image == null || this.validImage(image)) {
-      throw new IllegalArgumentException("Image cannot be null!");
-    }
-    this.layers.add(image);
   }
 
   /**
@@ -45,6 +38,12 @@ public class Layers implements ILayer {
     int firstImageWidth = this.layers.get(0).getWidth();
 
     return (firstImageWidth == image.getWidth()) && (firstImageHeight == image.getHeight());
+  }
+
+  @Override
+  public void createImageLayer(int layerNum) throws IllegalArgumentException {
+    // TODO find out what "creating a layer" means
+    this.layers.add(null);
   }
 
   @Override
@@ -73,6 +72,19 @@ public class Layers implements ILayer {
     for (IImage image : layeredImage) {
       this.layers.add(image);
     }
+  }
+
+  @Override
+  public void makeLayerInvisible(int layerNum) {
+    // TODO find out what "invisible" means
+  }
+
+  @Override
+  public void applyOperation(IPhotoOperations operation) {
+    if (operation == null || this.layers.isEmpty()) {
+      throw new IllegalArgumentException("Arguments cannot be null/No layers exist");
+    }
+    operation.apply(this.layers.get(0));
   }
 
 }

@@ -11,8 +11,8 @@ import model.color.IColorTransformation;
 import model.filter.IFilter;
 
 /**
- * Represents an image processing model as well as the actions that it can perform such as adding
- * and removing images from a HashMap, applying filters, and transforming the colors of an image.
+ * Represents an image processing model as well as the actions that it can perform such as applying
+ * filters, transforming the colors of an image, and exporting/importing images.
  */
 public interface IModel {
 

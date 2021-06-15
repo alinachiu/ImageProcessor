@@ -8,7 +8,7 @@ import model.image.IPixel;
 
 /**
  * Represents a class which manages a given {@code IImage} and exports the Image based on this
- * object's {@link Writer}.
+ * object's {@link Writer} to PPM format.
  */
 public class PPMExport implements IExport {
 
@@ -16,7 +16,7 @@ public class PPMExport implements IExport {
   private final Writer wr;
 
   /**
-   * Constructs a {@code PPMOutputFileManager} object with a default Writer for writing a file.
+   * Constructs a {@code PPMExport} object with a default Writer for writing a file.
    *
    * @param image the given image to be converted into a file
    * @throws IllegalArgumentException if the given image is null

@@ -1,6 +1,13 @@
 package model.controller;
 
+import java.io.IOException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 import model.IModel;
+import model.color.Grayscale;
+import model.color.Sepia;
+import model.filter.Blur;
+import model.filter.Sharpening;
 import model.view.SimpleIImageProcessingView;
 
 // TODO do the Javadocs
@@ -31,6 +38,62 @@ public class SimpleIImageProcessingController implements IImageProcessingControl
 
   @Override
   public void processImage() {
-    // TODO use the command design pattern
+    Scanner in = new Scanner(this.rd);
+    IPhotoCommands command = null;
+    while (in.hasNext()) {
+      String cmd = in.next().toLowerCase();
+
+      try {
+        switch (cmd) {
+          case "q":
+          case "quit":
+            return;
+          case "create":
+
+          case "current":
+
+          case "load":
+
+          case "save":
+
+          case "invisible":
+
+          case "bl":
+            command = new BlurCommand();
+            break;
+          case "sharpen":
+            command = new SharpenCommand();
+            break;
+          case "sepia":
+            command = new SepiaCommand();
+            break;
+          case "grayscale":
+            command = new GrayscaleCommand();
+            break;
+        }
+        if (command != null) {
+          command.go(null, this.model);  // TODO null to be replaced with image
+        }
+      } catch (InputMismatchException e) {
+        this.attemptAppend("Invalid input");
+      }
+
+      // TODO use the command design pattern
+    }
+  }
+
+  /**
+   * Tries to append a given string to this appendable, if possible.
+   *
+   * @param str the given string to be appended
+   * @throws IllegalStateException if writing to the Appendable throws an IOException
+   */
+  private void attemptAppend(String str) throws IllegalStateException {
+    try {
+      this.view.renderMessage(str);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new IllegalStateException("Writing to the Appendable object used by it fails");
+    }
   }
 }

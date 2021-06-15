@@ -1,5 +1,7 @@
 package model.controller;
 
+import java.io.IOException;
+
 // TODO write Javadoc
 public interface IImageProcessingController {
 

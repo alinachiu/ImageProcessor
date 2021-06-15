@@ -2,18 +2,27 @@ package model;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 import model.color.Grayscale;
 import model.color.IColorTransformation;
 import model.color.Sepia;
+import model.exports.IExport;
+import model.exports.JPEGExport;
+import model.exports.PNGExport;
+import model.exports.PPMExport;
 import model.filter.Blur;
 import model.filter.IFilter;
 import model.filter.Sharpening;
 import model.creator.CheckboardImageCreator;
 import model.creator.IImageCreator;
 import model.image.IImage;
+import model.image.IPixel;
 import model.image.PPMImage;
 import model.image.Pixel;
+import model.managers.IOManager;
+import model.managers.InputJPEGFilenameManager;
+import model.managers.InputPNGFilenameManager;
 
 /**
  * This class contains utility methods to read a PPM image from file and simply print its contents.
@@ -28,7 +37,7 @@ public class ImageUtil {
    * @return a 2D array of pixels that represents a PPM image
    * @throws IllegalArgumentException if the given filename is null or the file is not found
    */
-  public static Pixel[][] readPPM(String filename) throws IllegalArgumentException {
+  public static IPixel[][] readPPM(String filename) throws IllegalArgumentException {
     if (filename == null) {
       throw new IllegalArgumentException("No valid filename given.");
     }
@@ -81,6 +90,7 @@ public class ImageUtil {
 
   /**
    * Runs the program to test output for methods within the project.
+   *
    * @param args the string argument
    */
   public static void main(String[] args) {
@@ -89,16 +99,18 @@ public class ImageUtil {
     if (args.length > 0) {
       filename = args[0];
     } else {
-      filename = "res/ocean.ppm";
+      filename = "res/flower.jpeg";
     }
 
     IColorTransformation sepia = new Sepia();
-    IColorTransformation gray = new Grayscale();
-    IFilter blur = new Blur();
-    IFilter sharp = new Sharpening();
 
-    IImageCreator checkerboard = new CheckboardImageCreator(10, 10);
-    IImage checkerboardImg = checkerboard.createImage();
-    IImage givenFile = new PPMImage(filename);
+    IOManager input = new InputPNGFilenameManager(filename);
+    IImage importedImg = input.apply();
+
+    try {
+      IExport export = new JPEGExport(importedImg);
+      export.export();
+    } catch (IOException e) {
+    }
   }
 }
