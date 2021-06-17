@@ -15,6 +15,7 @@ import model.image.IImage;
 public class JPEGExport implements IExport {
 
   private final IImage image;
+  private final String filename;
 
   /**
    * Constructs a {@code JPEGExport} object with a default Writer for writing a file.
@@ -28,12 +29,31 @@ public class JPEGExport implements IExport {
       throw new IllegalArgumentException("Cannot have a null image.");
     }
     this.image = image;
+    String[] withoutExtension = image.getFilename().toLowerCase().split(".jpeg");
+    this.filename = withoutExtension[0] + " New";
   }
+
+  /**
+     * Constructs a {@code JPEGExport} object with a default Writer for writing a file.
+     *
+     * @param image the given image to be converted into a file
+     * @param fileName the desired filename for the exported file
+     * @throws IllegalArgumentException if the given image is null
+     * @throws IOException              if an I/O error occurs
+     */
+    public JPEGExport(IImage image, String desiredName) throws IllegalArgumentException, IOException {
+      if (image == null || desiredName == null) {
+        throw new IllegalArgumentException("Cannot have a null image or name.");
+      }
+      this.image = image;
+      this.filename = desiredName;
+
+    }
 
   @Override
   public void export() throws IOException {
     BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-    File file = new File("newImage.jpeg");
+    File file = new File(this.filename + ".jpeg");
 
     IPixel[][] imageGrid = image.getImage();
 

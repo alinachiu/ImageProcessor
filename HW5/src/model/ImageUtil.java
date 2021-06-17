@@ -3,10 +3,13 @@ package model;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 import model.color.Grayscale;
 import model.color.IColorTransformation;
 import model.color.Sepia;
+import model.controller.IImageProcessingController;
+import model.controller.SimpleIImageProcessingController;
 import model.exports.IExport;
 import model.exports.JPEGExport;
 import model.exports.PNGExport;
@@ -20,6 +23,9 @@ import model.image.IImage;
 import model.image.IPixel;
 import model.image.PPMImage;
 import model.image.Pixel;
+import model.layer.ILayer;
+import model.layer.ILayerModel;
+import model.layer.LayerModel;
 import model.managers.IOManager;
 import model.managers.InputJPEGFilenameManager;
 import model.managers.InputPNGFilenameManager;
@@ -102,15 +108,11 @@ public class ImageUtil {
       filename = "res/flower.jpeg";
     }
 
-    IColorTransformation sepia = new Sepia();
+    Appendable out = System.out;
+    Readable in = new InputStreamReader(System.in);
+    IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
+        in, out);
 
-    IOManager input = new InputPNGFilenameManager(filename);
-    IImage importedImg = input.apply();
-
-    try {
-      IExport export = new JPEGExport(importedImg);
-      export.export();
-    } catch (IOException e) {
-    }
+    controller.processImage();
   }
 }
