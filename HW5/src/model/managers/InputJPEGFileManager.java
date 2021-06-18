@@ -1,15 +1,11 @@
 package model.managers;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import model.AdditionalImageUtils;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.JPEGImage;
-import model.image.PNGImage;
-import model.image.Pixel;
+import model.image.Image;
 
 /**
  * Represents a class that manages the given jpeg input file and returns the file's associated
@@ -36,7 +32,7 @@ public class InputJPEGFileManager implements IOManager {
   public IImage apply() {
     try {
       IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(file);
-      return new JPEGImage(imageGrid, file.getName());
+      return new Image(imageGrid, file.getName());
     } catch (IOException e) {
       return null;
     }

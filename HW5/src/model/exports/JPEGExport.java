@@ -4,9 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 import javax.imageio.ImageIO;
 import model.image.IPixel;
 import model.image.IImage;
+import model.layer.ILayer;
 
 /**
  * Represents a class which manages a given {@code IImage} and exports the Image based on this
@@ -34,25 +36,25 @@ public class JPEGExport implements IExport {
   }
 
   /**
-     * Constructs a {@code JPEGExport} object with a default Writer for writing a file.
-     *
-     * @param image the given image to be converted into a file
-     * @param fileName the desired filename for the exported file
-     * @throws IllegalArgumentException if the given image is null
-     * @throws IOException              if an I/O error occurs
-     */
-    public JPEGExport(IImage image, String desiredName) throws IllegalArgumentException, IOException {
-      if (image == null || desiredName == null) {
-        throw new IllegalArgumentException("Cannot have a null image or name.");
-      }
-      this.image = image;
-      this.filename = desiredName;
-
+   * Constructs a {@code JPEGExport} object with a default Writer for writing a file.
+   *
+   * @param image the given image to be converted into a file
+   * @param desiredName the desired filename for the exported file
+   * @throws IllegalArgumentException if the given image is null
+   * @throws IOException              if an I/O error occurs
+   */
+  public JPEGExport(IImage image, String desiredName) throws IllegalArgumentException, IOException {
+    if (image == null || desiredName == null) {
+      throw new IllegalArgumentException("Cannot have a null image or name.");
     }
+    this.image = image;
+    this.filename = desiredName;
+  }
 
   @Override
   public void export() throws IOException {
-    BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+    BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(),
+        BufferedImage.TYPE_INT_RGB);
     File file = new File(this.filename + ".jpeg");
 
     IPixel[][] imageGrid = image.getImage();

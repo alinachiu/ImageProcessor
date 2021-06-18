@@ -2,7 +2,7 @@ package model.color;
 
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 
 /**
@@ -29,7 +29,7 @@ public abstract class AColorTransformation implements IColorTransformation {
       }
     }
 
-    return new PPMImage(imageGrid, image.getFilename());
+    return new Image(imageGrid, image.getFilename());
   }
 
   /**

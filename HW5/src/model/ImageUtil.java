@@ -2,33 +2,13 @@ package model;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
-import model.color.Grayscale;
-import model.color.IColorTransformation;
-import model.color.Sepia;
 import model.controller.IImageProcessingController;
 import model.controller.SimpleIImageProcessingController;
-import model.exports.IExport;
-import model.exports.JPEGExport;
-import model.exports.PNGExport;
-import model.exports.PPMExport;
-import model.filter.Blur;
-import model.filter.IFilter;
-import model.filter.Sharpening;
-import model.creator.CheckboardImageCreator;
-import model.creator.IImageCreator;
-import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
 import model.image.Pixel;
-import model.layer.ILayer;
-import model.layer.ILayerModel;
 import model.layer.LayerModel;
-import model.managers.IOManager;
-import model.managers.InputJPEGFilenameManager;
-import model.managers.InputPNGFilenameManager;
 
 /**
  * This class contains utility methods to read a PPM image from file and simply print its contents.

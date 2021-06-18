@@ -5,7 +5,6 @@ import model.AdditionalImageUtils;
 import java.io.File;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PNGImage;
 
 /**
  * Represents a class that manages the given png input file and returns the file's associated image.
@@ -31,7 +30,7 @@ public class InputPNGFileManager implements IOManager {
   public IImage apply() {
     try {
       IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(file);
-      return new PNGImage(imageGrid, file.getName());
+      return new Image(imageGrid, file.getName());
     } catch (IOException e) {
       return null;
     }

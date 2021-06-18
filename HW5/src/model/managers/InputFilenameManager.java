@@ -1,7 +1,7 @@
 package model.managers;
 
 import model.image.IImage;
-import model.image.PPMImage;
+import model.image.Image;
 
 /**
  * Represents a class that manages the given input file and returns the file's associated image.
@@ -25,6 +25,6 @@ public class InputFilenameManager implements IOManager {
 
   @Override
   public IImage apply() {
-    return new PPMImage(filename);
+    return new Image(filename);
   }
 }

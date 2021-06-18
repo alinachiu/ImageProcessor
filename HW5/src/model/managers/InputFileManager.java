@@ -3,7 +3,7 @@ package model.managers;
 import java.io.File;
 import model.image.IImage;
 import model.ImageUtil;
-import model.image.PPMImage;
+import model.image.Image;
 
 /**
  * Represents a class that manages the given input file and returns the file's associated image.
@@ -28,7 +28,7 @@ public class InputFileManager implements IOManager {
   @Override
   public IImage apply() {
     String filename = file.toString();
-    IImage image = new PPMImage(ImageUtil.readPPM(filename), filename);
+    IImage image = new Image(ImageUtil.readPPM(filename), filename);
     return image;
   }
 }

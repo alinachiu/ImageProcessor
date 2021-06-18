@@ -2,7 +2,7 @@ package model.filter;
 
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 
 /**
@@ -11,7 +11,7 @@ import model.image.Pixel;
  */
 public abstract class AFilter implements IFilter {
 
-  //The matrix representing the filter to be applied onto an image
+  // The matrix representing the filter to be applied onto an image
   // INVARIANT: Must be a square matrix with odd dimensions
   protected double[][] kernel;
 
@@ -32,7 +32,7 @@ public abstract class AFilter implements IFilter {
         imageGrid[i][j] = applyToEachPixel(i, j, copy, numSidePix);
       }
     }
-    return new PPMImage(imageGrid, image.getFilename() + "Filter");
+    return new Image(imageGrid, image.getFilename() + "Filter");
   }
 
   /**

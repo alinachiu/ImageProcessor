@@ -2,12 +2,10 @@ package model.managers;
 
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import model.AdditionalImageUtils;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.JPEGImage;
-import model.image.PNGImage;
+import model.image.Image;
 
 /**
  * Represents a class that manages the given png input filename and returns the image associated
@@ -35,7 +33,7 @@ public class InputPNGFilenameManager implements IOManager {
     try {
       File file = new File(filename);
       IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(file);
-      return new PNGImage(imageGrid, file.getName());
+      return new Image(imageGrid, file.getName());
     } catch (IOException e) {
       return null;
     }

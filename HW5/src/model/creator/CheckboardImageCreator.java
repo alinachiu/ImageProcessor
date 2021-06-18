@@ -2,7 +2,7 @@ package model.creator;
 
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 
 /**
@@ -16,22 +16,22 @@ public class CheckboardImageCreator implements IImageCreator {
   private final int numTiles;
   //The red channel for the first color
   // INVARIANT: red is a value between 0 and 255, inclusive
-  int color1R;
+  private final int color1R;
   //The green channel for the first color
   // INVARIANT: green is a value between 0 and 255, inclusive
-  int color1G;
+  private final int color1G;
   //The blue channel for the first color
   // INVARIANT: blue is a value between 0 and 255, inclusive
-  int color1B;
+  private final int color1B;
   //The red channel for the second color
   // INVARIANT: red is a value between 0 and 255, inclusive
-  int color2R;
+  private final int color2R;
   //The green channel for the second color
   // INVARIANT: green is a value between 0 and 255, inclusive
-  int color2G;
+  private final int color2G;
   //The blue channel for the second color
   // INVARIANT: blue is a value between 0 and 255, inclusive
-  int color2B;
+  private final int color2B;
 
 
   /**
@@ -127,8 +127,8 @@ public class CheckboardImageCreator implements IImageCreator {
       }
     }
 
-    // return a new model.imageRepresentation.PPMImage that has that array of pixels as a parameter
+    // return a new model.imageRepresentation.Image that has that array of pixels as a parameter
     // as well as the desired width and height
-    return new PPMImage(checkerboard, filename);
+    return new Image(checkerboard, filename);
   }
 }

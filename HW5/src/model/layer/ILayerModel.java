@@ -1,10 +1,9 @@
 package model.layer;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import model.IModel;
 import model.IPhotoOperations;
-import model.image.IImage;
 
 /**
  * Represents a set of layers of images that are able to be added or removed.
@@ -13,7 +12,7 @@ public interface ILayerModel extends IModel {
 
   /**
    * Creates a layer in a set of layers. If a layer with the given name already exists it will do
-   * nothing.
+   * nothing. If the layer created is the first layer, it becomes the current
    *
    * @param name the name of the layer being created
    * @throws IllegalArgumentException if the given name is null.
@@ -21,7 +20,7 @@ public interface ILayerModel extends IModel {
   void createImageLayer(String name) throws IllegalArgumentException;
 
   /**
-   * Represents a function to remove the layer with the given name from the {@link ILayers}.
+   * Represents a function to remove the layer with the given name from the {@link ILayer}.
    *
    * @param name the name of the layer being created
    * @throws IllegalArgumentException if the given name is null or if no such layer exists
@@ -42,25 +41,31 @@ public interface ILayerModel extends IModel {
    * Saves the multi-layered image as a collections of files (one for each layer as a regular image
    * and one text files that stores the locations of all the layer files).
    *
+   * @param desiredDir the name the user wants to name the directory as
    * @throws IllegalArgumentException if the multi-layered image is empty.
    */
-  void saveAll();
+  void saveAll(String desiredDir);
 
   /**
-   * Loads in an image that has the given filename to be assigned to the current layer.
+   * Loads in one or more image(s) that have the given filename(s) to be assigned to the current
+   * layer. If the user has not created enough layers before trying to load in images, the method
+   * will ignore the extra images (i.e. if there are only two layers but the user attempts to load
+   * in four, the first two will load in and the other two will be ignored). If the given image is
+   * not the same dimension as the previous layers, the image will not be loaded in.
    *
    * @throws IllegalArgumentException if the given filename is null or cannot find a file with the
    *                                  given filename
    */
-  void loadLayer(String filename);
+  void loadLayer(String... filename);
 
   /**
-   * Loads in a given set of layered images that is saved in the same format.
+   * Loads/Creates a given set of layered images based on the file name of the text file associated
+   * with the LIME.
    *
    * @throws IllegalArgumentException if the given multi-layered image to be loaded is null or if
-   *                                  the list is empty. Or if cannot find the layeredImage
+   *                                  cannot find the image associated with the string(s)
    */
-  void loadAll(List<ILayer> layeredImage);
+  void loadAll(String filename);
 
   /**
    * Makes the layer that has the given name invisible.
@@ -84,7 +89,13 @@ public interface ILayerModel extends IModel {
    */
   void setCurrent(String layerName);
 
-  // TODO write javadoc
+  /**
+   * Applies the given {@code IPhotoOperations} to the current layer. If there is no image
+   * associated with the layer or if the layer is invisible, then the operation will not be
+   * applied.
+   *
+   * @param operation the operation to be applied to the current layer
+   */
   void applyOperation(IPhotoOperations operation);
 
 

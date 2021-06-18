@@ -5,7 +5,6 @@ import java.io.IOException;
 import model.AdditionalImageUtils;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.JPEGImage;
 
 // TODO javadoc
 public class InputJPEGFilenameManager implements IOManager {
@@ -30,7 +29,7 @@ public class InputJPEGFilenameManager implements IOManager {
     try {
       File file = new File(filename);
       IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(file);
-      return new JPEGImage(imageGrid, file.getName());
+      return new Image(imageGrid, file.getName());
     } catch (IOException e) {
       return null;
     }

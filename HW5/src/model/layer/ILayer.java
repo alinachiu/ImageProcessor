@@ -8,14 +8,13 @@ public interface ILayer {
 
   /**
    * Sets the image of this layer to be the given image.
-
+   *
    * @throws IllegalArgumentException if the given image is null.
    */
   void setImage(IImage image) throws IllegalArgumentException;
 
   /**
    * Changes the current visibility to be the given visibility.
-   *
    */
   void setVisibility(boolean isVisible);
 
@@ -33,12 +32,12 @@ public interface ILayer {
    */
   IImage getImage();
 
-   /**
-     * Determines if this layer is visible
-     *
-     * @return true if the layer is visible and false if it is invisible
-     */
-    boolean isVisible();
+  /**
+   * Determines if this layer is visible
+   *
+   * @return true if the layer is visible and false if it is invisible
+   */
+  boolean isVisible();
 
   // TODO javadoc
   IImage applyOperation(IPhotoOperations operation);
