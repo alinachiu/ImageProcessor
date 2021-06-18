@@ -57,17 +57,13 @@ public class InputTextFilenameManager implements IOLayerManager {
     while (in.hasNext()) {
       String cmd = in.nextLine().toLowerCase();
       String[] tokens = cmd.split("\\s*,\\s*");
-
       if (tokens.length != 3) {
         throw new IllegalArgumentException("Invalid text file!");
       }
 
-      System.out.println(tokens[1] + tokens[2]);
-
       ILayer layer = new Layer(tokens[1]);
       layer.setImage(determineCorrectManager(tokens[1]).apply());
       layer.setVisibility(Boolean.parseBoolean(tokens[2]));
-
       layers.add(layer);
     }
 
