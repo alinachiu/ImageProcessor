@@ -12,8 +12,10 @@ public interface IOLayerManager {
    * Reads and constructs an ILayer based on the fields of this class.
    *
    * @return the ILayers associated with the fields of the class.
-   * @throws IllegalArgumentException if any arguments are null/invalid
+   * @throws IllegalArgumentException if any arguments are null/invalid or if the file is malformed
+   *                                  (if the lines do not follow the format of layerNum, filename
+   *                                  of image, visibility)
    */
-  List<ILayer> apply();
+  List<ILayer> apply() throws IllegalArgumentException;
 }
 
