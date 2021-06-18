@@ -27,13 +27,14 @@ import model.managers.InputTextFilenameManager;
 //  JAR file, updated class diagram, updated README
 
 // TODO split tests:
-//  - Alina: Controller, Imports (all), LayerModel (createImageLayer, removeImageLayer, loadLayer,
-//    loadAll, setCurrent, applyOperation, make abstract test class for shared model features), UML,
-//    update README, USEME, test to see if JAR file works, AdditionalImageUtils, two examples of
-//    script files
+//  - Alina: Controller, abstract out controller a bit more, Imports (all), LayerModel
+//    (createImageLayer, removeImageLayer, loadLayer, loadAll, setCurrent, applyOperation, make
+//    abstract test class for shared model features), UML, update README, USEME, test to see if
+//    JAR file works, AdditionalImageUtils, two examples of script files
 //  - Jessica: IPhotoOperations (abstract), Exports (all), Layer class, LayerModel (saveLayer,
 //    saveAll, makeLayerInvisible/visible), mocks, view, change PNG and JPEG export to
-//    AdditionalImageUtils, abstract out save + saveAll
+//    AdditionalImageUtils, abstract out save + saveAll, ask TA about backwards compatibility
+//    in controller
 
 /**
  * Represents a group of layers of {@code IImage} that can add/remove images from the group of
