@@ -80,14 +80,6 @@ public class ImageUtil {
    * @param args the string argument
    */
   public static void main(String[] args) {
-    String filename;
-
-    if (args.length > 0) {
-      filename = args[0];
-    } else {
-      filename = "res/flower.jpeg";
-    }
-
     Appendable out = System.out;
     Readable in = new InputStreamReader(System.in);
     IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),

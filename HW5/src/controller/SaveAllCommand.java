@@ -2,12 +2,15 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import model.exports.IExport;
 import model.exports.JPEGExport;
 import model.exports.PNGExport;
 import model.exports.PPMExportFilename;
 import model.exports.TextFileExport;
 import model.image.IImage;
+import model.layer.ILayer;
 import model.layer.ILayerModel;
 
 /**
@@ -40,19 +43,25 @@ public class SaveAllCommand implements IPhotoCommands {
 
   @Override
   public void go(ILayerModel m) throws IllegalArgumentException {
+    if (m == null) {
+      throw new IllegalArgumentException("Model cannot be null");
+    }
     IExport imgExporter;
     String imageInfo = "";
 
-    for (int i = 0; i < m.getNumberOfLayers(); i++) {
-      IImage currImg = m.getImageAtLayer(i);
+    List<ILayer> layers = new ArrayList<>();
+
+    for (int i = 0; i < layers.size(); i++) {
+      IImage currImg = layers.get(i).getImage();
+
       if (currImg != null) {
         try {
           imgExporter = determineCorrectExporter(currImg);
           if (imgExporter != null) {
             imgExporter.export();
             imageInfo +=
-                i + ", " + desiredDir + getOnlyNameForFile(currImg.getFilename()) + ", " + m
-                    .getVisibilityAtLayer(i)
+                i + ", " + desiredDir + getOnlyNameForFile(currImg.getFilename()) + ", " + layers
+                    .get(i).isVisible()
                     + "\n";
           }
         } catch (IOException e) {

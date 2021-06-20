@@ -7,7 +7,7 @@ import model.filter.Sharpening;
 import model.filter.UserFilter;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class IFilterTest {
         {new Pixel(3, 0, 100, 50, 80), new Pixel(3, 1, 50, 200, 10),
             new Pixel(3, 2, 100, 40, 240), new Pixel(3, 3, 90, 88, 120)}
     };
-    evenImg = new PPMImage(evenImage, "ExImage");
+    evenImg = new Image(evenImage, "ExImage");
     unevenImage = new IPixel[][]{
         {new Pixel(0, 0, 100, 50, 80), new Pixel(0, 1, 50, 200, 10),
             new Pixel(0, 2, 100, 40, 240), new Pixel(0, 3, 90, 88, 120)},
@@ -56,7 +56,7 @@ public class IFilterTest {
             new Pixel(1, 2, 100, 40, 240), new Pixel(1, 3, 90, 88, 120)},
         {new Pixel(2, 0, 100, 50, 80), new Pixel(2, 1, 50, 200, 10),
             new Pixel(2, 2, 100, 40, 240), new Pixel(2, 3, 90, 88, 120)}};
-    unevenImg = new PPMImage(unevenImage, "ExImage2");
+    unevenImg = new Image(unevenImage, "ExImage2");
     oddByOddImage = new IPixel[][]{
         {new Pixel(0, 0, 100, 50, 80), new Pixel(0, 1, 50, 200, 10),
             new Pixel(0, 2, 90, 88, 120)},
@@ -64,7 +64,7 @@ public class IFilterTest {
             new Pixel(1, 2, 90, 88, 120)},
         {new Pixel(2, 0, 100, 50, 80), new Pixel(2, 1, 50, 200, 10),
             new Pixel(2, 2, 90, 88, 120)}};
-    oddByOddImg = new PPMImage(oddByOddImage, "ExOddImage");
+    oddByOddImg = new Image(oddByOddImage, "ExOddImage");
     greaterHeight = new IPixel[][]{
         {new Pixel(0, 0, 100, 50, 80), new Pixel(0, 1, 50, 200, 10),
             new Pixel(0, 2, 90, 88, 120), new Pixel(0, 3, 90, 88, 120),
@@ -84,7 +84,7 @@ public class IFilterTest {
         {new Pixel(5, 0, 100, 50, 80), new Pixel(5, 1, 50, 200, 10),
             new Pixel(5, 3, 90, 88, 120), new Pixel(5, 4, 90, 88, 120),
             new Pixel(5, 4, 90, 88, 120)}};
-    greaterHeightImg = new PPMImage(greaterHeight, "ExHeightImage");
+    greaterHeightImg = new Image(greaterHeight, "ExHeightImage");
     greaterWidth = new IPixel[][]{
         {new Pixel(0, 0, 100, 50, 80), new Pixel(0, 1, 50, 200, 10),
             new Pixel(0, 2, 90, 88, 120), new Pixel(0, 3, 90, 88, 120),
@@ -101,7 +101,7 @@ public class IFilterTest {
         {new Pixel(4, 0, 100, 50, 80), new Pixel(4, 1, 50, 200, 10),
             new Pixel(4, 2, 90, 88, 120), new Pixel(4, 3, 90, 88, 120),
             new Pixel(4, 4, 90, 88, 120), new Pixel(4, 5, 100, 50, 80)}};
-    greaterWidthImg = new PPMImage(greaterWidth, "ExWidthImage");
+    greaterWidthImg = new Image(greaterWidth, "ExWidthImage");
 
   }
 
@@ -113,15 +113,15 @@ public class IFilterTest {
   //Tests for Blur
   @Test(expected = IllegalArgumentException.class)
   public void nullEmptyImgBlur() {
-    blur.apply(new PPMImage(new IPixel[][]{}, "Empty"));
+    blur.apply(new Image(new IPixel[][]{}, "Empty"));
   }
 
   @Test
   public void blurOneByOneImg() {
     IPixel[][] oneByOne = new IPixel[][]{{new Pixel(0, 0, 10, 100, 200)}};
-    IImage img = new PPMImage(oneByOne, "OneByOne");
+    IImage img = new Image(oneByOne, "OneByOne");
     assertArrayEquals(new IPixel[][]{{new Pixel(0, 0, 2, 25, 50)}}, blur.apply(img).getImage());
-    assertEquals("OneByOneFilter", blur.apply(img).getFilename());
+    assertEquals("OneByOne", blur.apply(img).getFilename());
   }
 
   @Test
@@ -146,7 +146,7 @@ public class IFilterTest {
             new Pixel(5, 2, 58, 86, 68), new Pixel(5, 3, 65, 65, 89),
             new Pixel(5, 4, 49, 49, 67)}};
     assertArrayEquals(grid, blur.apply(greaterHeightImg).getImage());
-    assertEquals("ExHeightImageFilter", blur.apply(greaterHeightImg).getFilename());
+    assertEquals("ExHeightImage", blur.apply(greaterHeightImg).getFilename());
   }
 
   @Test
@@ -168,7 +168,7 @@ public class IFilterTest {
             new Pixel(4, 2, 58, 86, 68), new Pixel(4, 3, 65, 65, 89),
             new Pixel(4, 4, 67, 58, 82), new Pixel(4, 5, 53, 34, 52)}};
     assertArrayEquals(grid, blur.apply(greaterWidthImg).getImage());
-    assertEquals("ExWidthImageFilter", blur.apply(greaterWidthImg).getFilename());
+    assertEquals("ExWidthImage", blur.apply(greaterWidthImg).getFilename());
   }
 
   @Test
@@ -176,24 +176,24 @@ public class IFilterTest {
     IPixel[][] twoByTwo = new IPixel[][]{
         {new Pixel(0, 0, 10, 100, 100), new Pixel(0, 1, 100, 6, 60)},
         {new Pixel(1, 0, 108, 0, 0), new Pixel(1, 1, 80, 100, 40)}};
-    IImage img = new PPMImage(twoByTwo, "TwoByTwo");
+    IImage img = new Image(twoByTwo, "TwoByTwo");
     assertArrayEquals(new IPixel[][]{{new Pixel(0, 0, 32, 31, 34), new Pixel(0, 1, 42, 25, 32)},
         {new Pixel(1, 0, 44, 24, 20), new Pixel(1, 1, 45, 31, 23)}}, blur.apply(img).getImage());
-    assertEquals("TwoByTwoFilter", blur.apply(img).getFilename());
+    assertEquals("TwoByTwo", blur.apply(img).getFilename());
   }
 
   //Test for Sharpening
   @Test(expected = IllegalArgumentException.class)
   public void nullEmptyImgSharp() {
-    sharp.apply(new PPMImage(new IPixel[][]{}, "Empty"));
+    sharp.apply(new Image(new IPixel[][]{}, "Empty"));
   }
 
   @Test
   public void sharpOneByOneImg() {
     IPixel[][] oneByOne = new IPixel[][]{{new Pixel(0, 0, 10, 100, 200)}};
-    IImage img = new PPMImage(oneByOne, "OneByOne");
+    IImage img = new Image(oneByOne, "OneByOne");
     assertArrayEquals(new IPixel[][]{{new Pixel(0, 0, 10, 100, 200)}}, sharp.apply(img).getImage());
-    assertEquals("OneByOneFilter", sharp.apply(img).getFilename());
+    assertEquals("OneByOne", sharp.apply(img).getFilename());
   }
 
   @Test
@@ -218,7 +218,7 @@ public class IFilterTest {
             new Pixel(5, 2, 86, 155, 110), new Pixel(5, 3, 149, 90, 221),
             new Pixel(5, 4, 102, 99, 135)}};
     assertArrayEquals(grid, sharp.apply(greaterHeightImg).getImage());
-    assertEquals("ExHeightImageFilter", sharp.apply(greaterHeightImg).getFilename());
+    assertEquals("ExHeightImage", sharp.apply(greaterHeightImg).getFilename());
   }
 
   @Test
@@ -240,7 +240,7 @@ public class IFilterTest {
             new Pixel(4, 2, 86, 155, 110), new Pixel(4, 3, 114, 71, 191),
             new Pixel(4, 4, 140, 117, 165), new Pixel(4, 5, 114, 57, 90)}};
     assertArrayEquals(grid, sharp.apply(greaterWidthImg).getImage());
-    assertEquals("ExWidthImageFilter", sharp.apply(greaterWidthImg).getFilename());
+    assertEquals("ExWidthImage", sharp.apply(greaterWidthImg).getFilename());
   }
 
   @Test
@@ -248,12 +248,12 @@ public class IFilterTest {
     IPixel[][] twoByTwo = new IPixel[][]{
         {new Pixel(0, 0, 10, 100, 100), new Pixel(0, 1, 100, 6, 60)},
         {new Pixel(1, 0, 108, 0, 0), new Pixel(1, 1, 80, 100, 40)}};
-    IImage img = new PPMImage(twoByTwo, "TwoByTwo");
+    IImage img = new Image(twoByTwo, "TwoByTwo");
     assertArrayEquals(new IPixel[][]{{
-        new Pixel(0, 0, 82, 126, 125), new Pixel(0, 1, 149, 56, 95)}, {
-        new Pixel(1, 0, 155, 51, 50), new Pixel(1, 1, 134, 126, 80)}},
+            new Pixel(0, 0, 82, 126, 125), new Pixel(0, 1, 149, 56, 95)}, {
+            new Pixel(1, 0, 155, 51, 50), new Pixel(1, 1, 134, 126, 80)}},
         sharp.apply(img).getImage());
-    assertEquals("TwoByTwoFilter", sharp.apply(img).getFilename());
+    assertEquals("TwoByTwo", sharp.apply(img).getFilename());
   }
 
 
@@ -284,7 +284,7 @@ public class IFilterTest {
         {.5, .5, .5}};
     user = new UserFilter(kernel);
     empty = new IPixel[0][0];
-    emptyImg = new PPMImage(empty, "Empty");
+    emptyImg = new Image(empty, "Empty");
     user.apply(emptyImg).getImage();
   }
 
@@ -333,7 +333,7 @@ public class IFilterTest {
             new Pixel(3, 3, 127, 90, 234)}
     };
     assertArrayEquals(newImage, user.apply(evenImg).getImage());
-    assertEquals("ExImageFilter", user.apply(evenImg).getFilename());
+    assertEquals("ExImage", user.apply(evenImg).getFilename());
   }
 
   @Test
@@ -351,7 +351,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 90, 150, 54), new Pixel(2, 1, 190, 194, 230),
             new Pixel(2, 2, 164, 255, 226), new Pixel(2, 3, 154, 92, 255)}};
     assertArrayEquals(newImage, user.apply(unevenImg).getImage());
-    assertEquals("ExImage2Filter", user.apply(unevenImg).getFilename());
+    assertEquals("ExImage2", user.apply(unevenImg).getFilename());
   }
 
   @Test
@@ -367,7 +367,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 110, 125, 76), new Pixel(2, 1, 135, 221, 145),
             new Pixel(2, 2, 151, 171, 255), new Pixel(2, 3, 131, 99, 228)}};
     assertArrayEquals(newImage, user.apply(unevenImg).getImage());
-    assertEquals("ExImage2Filter", user.apply(unevenImg).getFilename());
+    assertEquals("ExImage2", user.apply(unevenImg).getFilename());
   }
 
   @Test
@@ -386,7 +386,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 0, 0, 0), new Pixel(2, 1, 75, 37, 60),
             new Pixel(2, 2, 37, 150, 7), new Pixel(2, 3, 75, 30, 180)}};
     assertArrayEquals(newImage, user.apply(unevenImg).getImage());
-    assertEquals("ExImage2Filter", user.apply(unevenImg).getFilename());
+    assertEquals("ExImage2", user.apply(unevenImg).getFilename());
   }
 
 
@@ -407,7 +407,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 90, 150, 54), new Pixel(2, 1, 150, 174, 198),
             new Pixel(2, 2, 144, 196, 222), new Pixel(2, 3, 114, 76, 216)}};
     assertArrayEquals(newImage, user.apply(unevenImg).getImage());
-    assertEquals("ExImage2Filter", user.apply(unevenImg).getFilename());
+    assertEquals("ExImage2", user.apply(unevenImg).getFilename());
   }
 
   @Test
@@ -423,7 +423,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 50, 25, 40), new Pixel(2, 1, 25, 100, 5),
             new Pixel(2, 2, 50, 20, 120), new Pixel(2, 3, 45, 44, 60)}};
     assertArrayEquals(newImage, user.apply(unevenImg).getImage());
-    assertEquals("ExImage2Filter", user.apply(unevenImg).getFilename());
+    assertEquals("ExImage2", user.apply(unevenImg).getFilename());
   }
 
   @Test
@@ -443,7 +443,7 @@ public class IFilterTest {
         {new Pixel(2, 0, 206, 255, 184), new Pixel(2, 1, 228, 255, 215),
             new Pixel(2, 2, 210, 255, 166)}};
     assertArrayEquals(newImage, user.apply(oddByOddImg).getImage());
-    assertEquals("ExOddImageFilter", user.apply(oddByOddImg).getFilename());
+    assertEquals("ExOddImage", user.apply(oddByOddImg).getFilename());
   }
 
   @Test
@@ -457,14 +457,14 @@ public class IFilterTest {
             new Pixel(1, 2, 255, 255, 255)},
         {new Pixel(2, 0, 255, 255, 255), new Pixel(2, 1, 255, 255, 255),
             new Pixel(2, 2, 255, 255, 255)}};
-    IImage img = new PPMImage(threeByThree, "Clamping");
+    IImage img = new Image(threeByThree, "Clamping");
     assertArrayEquals(new IPixel[][]{
         {new Pixel(0, 0, 0, 0, 0), new Pixel(0, 1, 0, 0, 0), new Pixel(0, 2, 0, 0, 0)},
         {new Pixel(1, 0, 255, 255, 255), new Pixel(1, 1, 255, 255, 255),
             new Pixel(1, 2, 255, 255, 255)},
         {new Pixel(2, 0, 255, 255, 255), new Pixel(2, 1, 255, 255, 255),
             new Pixel(2, 2, 255, 255, 255)}}, user.apply(img).getImage());
-    assertEquals("ClampingFilter", sharp.apply(img).getFilename());
+    assertEquals("Clamping", sharp.apply(img).getFilename());
   }
 
   @Test
@@ -478,12 +478,12 @@ public class IFilterTest {
             new Pixel(1, 2, 255, 255, 255)},
         {new Pixel(2, 0, 255, 255, 255), new Pixel(2, 1, 255, 255, 255),
             new Pixel(2, 2, 255, 255, 255)}};
-    IImage img = new PPMImage(threeByThree, "Clamping");
+    IImage img = new Image(threeByThree, "Clamping");
     assertArrayEquals(new IPixel[][]{
             {new Pixel(0, 0, 0, 0, 0), new Pixel(0, 1, 0, 0, 0), new Pixel(0, 2, 0, 0, 0)},
             {new Pixel(1, 0, 0, 0, 0), new Pixel(1, 1, 0, 0, 0), new Pixel(1, 2, 0, 0, 0)},
             {new Pixel(2, 0, 0, 0, 0), new Pixel(2, 1, 0, 0, 0), new Pixel(2, 2, 0, 0, 0)}},
         user.apply(img).getImage());
-    assertEquals("ClampingFilter", sharp.apply(img).getFilename());
+    assertEquals("Clamping", sharp.apply(img).getFilename());
   }
 }

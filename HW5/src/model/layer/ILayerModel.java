@@ -16,7 +16,8 @@ public interface ILayerModel extends IModel {
    * nothing. If the layer created is the first layer, it becomes the current
    *
    * @param name the name of the layer being created
-   * @throws IllegalArgumentException if the given name is null.
+   * @throws IllegalArgumentException if the given name is null or if a layer already exists with
+   *                                  that name
    */
   void createImageLayer(String name) throws IllegalArgumentException;
 
@@ -36,7 +37,7 @@ public interface ILayerModel extends IModel {
    * @param image the image to be loaded into the current layer
    * @throws IllegalArgumentException if the given image is null
    */
-  void loadLayer(IImage image);
+  void loadLayer(IImage image) throws IllegalArgumentException;
 
   /**
    * Loads/create a multi-layered image using the given imported layers.
@@ -44,64 +45,29 @@ public interface ILayerModel extends IModel {
    * @param importedLayers the multi-layers to be instantiated
    * @throws IllegalArgumentException if the given list of layers is null.
    */
-  void loadAll(List<ILayer> importedLayers);
+  void loadAll(List<ILayer> importedLayers) throws IllegalArgumentException;
 
   /**
    * Makes the layer that has the given name invisible.
    *
    * @param layerName the name of the layer to make invisible
-   * @throws IllegalArgumentException if the given name is null or if the name does not exist within
-   *                                  the layers.
+   * @throws IllegalArgumentException if the given name is null or if no such layer exists
    */
-  void makeLayerInvisible(String layerName);
+  void makeLayerInvisible(String layerName) throws IllegalArgumentException;
 
   /**
    * Makes the layer that has the given name visible.
    *
    * @param layerName the name of the layer to make visible
-   * @throws IllegalArgumentException if the given name is null or if the name does not exist within
-   *                                  the layers.
+   * @throws IllegalArgumentException if the given name is null or if no such layer exists
    */
-  void makeLayerVisible(String layerName);
+  void makeLayerVisible(String layerName) throws IllegalArgumentException;
 
   /**
-   * Produces the topmost visible image within the layers.
-   *
-   * @throws IllegalArgumentException if all the layers are invisible/none are visible.
-   */
-  IImage getTopmostVisibleImage();
-
-  /**
-   * Produces the number of layers in the multi-layered image.
-   */
-  int getNumberOfLayers();
-
-  /**
-   * Produces the image within the multi-layer image that is at the given index.
-   *
-   * @param index the index at which we want the image from the layers
-   * @return the image at the given index.
-   * @throws IllegalArgumentException if the index is out of bounds (negative or more than the
-   *                                  number of layers available)
-   */
-  IImage getImageAtLayer(int index) throws IllegalArgumentException;
-
-  /**
-   * Produces the visibility of the layer at the given index.
-   *
-   * @param index the index at which we want the visibility from the layers
-   * @return boolean that is true if the layer is visible.
-   * @throws IllegalArgumentException if the index is out of bounds (negative or more than the
-   *                                  number of layers available)
-   */
-  boolean getVisibilityAtLayer(int index) throws IllegalArgumentException;
-
-  /**
-   * Sets the given layer based on its name to be the current layer to perform operations on. If the
-   * layer does not exist, the current will not be set to it.
+   * Sets the given layer based on its name to be the current layer to perform operations on.
    *
    * @param layerName the name of the layer to be operated on
-   * @throws IllegalArgumentException if the layer name is null
+   * @throws IllegalArgumentException if the layer name is null or if no such layer exists
    */
   void setCurrent(String layerName) throws IllegalArgumentException;
 
@@ -110,7 +76,8 @@ public interface ILayerModel extends IModel {
    * isn't null and invisible.
    *
    * @param filter the type of filter to apply.
-   * @throws IllegalArgumentException if the given filter is null
+   * @throws IllegalArgumentException if the given filter is null or if the current is
+   *                                  null/invisible/does not exist, nothing will be done.
    */
   void filterCurrent(IFilter filter) throws IllegalArgumentException;
 
@@ -119,9 +86,18 @@ public interface ILayerModel extends IModel {
    * current image isn't null and invisible.
    *
    * @param colorTransformation the type of colorTransformation to apply.
-   * @throws IllegalArgumentException if the given colorTransformation is null
+   * @throws IllegalArgumentException if the given colorTransformation is null or If the current is
+   *                                  null/invisible/does not exist, nothing will be done.
    */
-  void colorTransformCurrent(IColorTransformation colorTransformation);
+  void colorTransformCurrent(IColorTransformation colorTransformation)
+      throws IllegalArgumentException;
+
+  /**
+   * Creates a deep copy of the list of layers in this {@code ILayerModel}.
+   *
+   * @returns a deep copy of the list of layers in the model.
+   */
+  List<ILayer> getLayers();
 
 }
 

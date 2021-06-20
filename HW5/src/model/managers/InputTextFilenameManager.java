@@ -20,20 +20,6 @@ public class InputTextFilenameManager implements IOLayerManager {
    * Constructs a {@code InputTextFilenameManager} object.
    *
    * @param filename the path of the file
-   * @param rd       the readable to be parsed through
-   * @throws IllegalArgumentException if the filename is null
-   */
-  public InputTextFilenameManager(String filename, Readable rd) throws IllegalArgumentException {
-    if (filename == null) {
-      throw new IllegalArgumentException("Filename is null.");
-    }
-    this.rd = rd;
-  }
-
-  /**
-   * Constructs a {@code InputTextFilenameManager} object.
-   *
-   * @param filename the path of the file
    * @throws IllegalArgumentException if the filename is null or if the associated file is not
    *                                  found
    */

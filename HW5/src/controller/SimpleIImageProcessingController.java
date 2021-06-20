@@ -84,7 +84,11 @@ public class SimpleIImageProcessingController implements IImageProcessingControl
       functionCommand = knownCommands.getOrDefault(input, null);
 
       if (functionCommand != null) {
-        this.runCommandBasedOnFunction(functionCommand, in);
+        try {
+          this.runCommandBasedOnFunction(functionCommand, in);
+        } catch (IllegalArgumentException e) {
+          this.attemptAppend("Invalid command! Try again! " + e.getMessage() + "\n");
+        }
       } else {
         this.attemptAppend("Invalid input!\n");
       }

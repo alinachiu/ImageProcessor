@@ -2,10 +2,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import model.ImageUtil;
+import utils.ImageUtil;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,43 +31,43 @@ public class IImageTest {
             new Pixel(2, 2, 255, 0, 0), new Pixel(2, 3, 0, 0, 0)},
         {new Pixel(3, 0, 0, 0, 0), new Pixel(3, 1, 255, 0, 0),
             new Pixel(3, 2, 0, 0, 0), new Pixel(3, 3, 255, 0, 0)}};
-    exPPM = new PPMImage(exImg, "Checkerboard");
-    checkerboardPMM = new PPMImage("res/Checkerboard.ppm");
+    exPPM = new Image(exImg, "Checkerboard");
+    checkerboardPMM = new Image("res/Checkerboard.ppm");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullFilenameSingleConstructor() {
-    new PPMImage(null);
+    new Image(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nonExistentFilenameSingleConstructor() {
-    new PPMImage("NonexistentFilename");
+    new Image("NonexistentFilename");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void invalidImageConstructor() {
-    new PPMImage(null, "Checkerboard");
+    new Image(null, "Checkerboard");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void invalidFilenameConstructor() {
-    new PPMImage(exImg, null);
+    new Image(exImg, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void invalidImageAndFilenameConstructor() {
-    new PPMImage(null, null);
+    new Image(null, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void emptyHeightImageForConstructor() {
-    new PPMImage(new IPixel[][]{}, "Empty");
+    new Image(new IPixel[][]{}, "Empty");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void emptyRowImageForConstructor() {
-    new PPMImage(new IPixel[][]{{}}, "Empty");
+    new Image(new IPixel[][]{{}}, "Empty");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -79,7 +79,7 @@ public class IImageTest {
         {new Pixel(1, 1, 2, 3, 4),
             null,
             new Pixel(1, 1, 2, 3, 4)}};
-    IImage invalidImage = new PPMImage(invalidGrid, "InvalidPPMImage");
+    IImage invalidImage = new Image(invalidGrid, "InvalidPPMImage");
   }
 
   @Test
@@ -130,7 +130,7 @@ public class IImageTest {
 
   @Test
   public void testEqualsExtensional() {
-    IImage copyPPM = new PPMImage(exImg, exPPM.getFilename());
+    IImage copyPPM = new Image(exImg, exPPM.getFilename());
     assertEquals(exPPM, copyPPM);
   }
 
@@ -146,7 +146,7 @@ public class IImageTest {
 
   @Test
   public void testHashcodeExtensional() {
-    IImage copyPPM = new PPMImage(exImg, exPPM.getFilename());
+    IImage copyPPM = new Image(exImg, exPPM.getFilename());
     assertEquals(copyPPM.hashCode(), exPPM.hashCode());
   }
 }

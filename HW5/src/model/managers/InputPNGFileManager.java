@@ -32,7 +32,7 @@ public class InputPNGFileManager implements IOManager {
   public IImage apply() {
     try {
       IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(file);
-      return new Image(imageGrid, file.getName());
+      return new Image(imageGrid, file.getPath());
     } catch (IOException e) {
       return null;
     }

@@ -5,7 +5,7 @@ import java.util.Objects;
 import utils.ImageUtil;
 
 /**
- * Represents a PPM image that is of the PPM format (a simple, text-based file format to store
+ * Represents an image that is of the PPM/JPEG/PNG format (a simple, text-based file format to store
  * images) that has a list of pixels. A PPM Image is made up of pixels that have red, green, and
  * blue values of each pixel, row-wise.
  */

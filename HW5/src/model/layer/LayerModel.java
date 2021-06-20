@@ -9,11 +9,10 @@ import model.creator.IImageCreator;
 import model.filter.IFilter;
 import model.image.IImage;
 
-// TODO ask about backwards compatibility, write USEME/tests, two examples of script file
-//  JAR file, updated class diagram, updated README
+// TODO write USEME/tests, two examples of script file JAR file, updated class diagram, updated README
 
 // TODO split tests:
-//  - Alina: Controller, Imports (all), LayerModel createImageLayer, removeImageLayer, setCurrent,),
+//  - Alina: Controller,
 //    UML, update README, USEME, test to see if JAR file works, one example of script files add where to put JAR file in README
 //  - Jessica: IPhotoOperations (abstract), Exports (all), Layer class, LayerModel (saveLayer,
 //    saveAll, makeLayerInvisible/visible), mocks, view, change PNG and JPEG export to
@@ -41,81 +40,77 @@ public class LayerModel implements ILayerModel {
 
   @Override
   public void createImageLayer(String name) throws IllegalArgumentException {
+    if (name == null) {
+      throw new IllegalArgumentException("Name cannot be null!");
+    }
+
     if (this.getIndexBasedOnName(name) == -1) {
       if (layers.isEmpty()) {
         currentLayerNum = 0;
       }
       this.layers.add(new Layer(name));
+    } else {
+      throw new IllegalArgumentException("Layer already exists!");
     }
   }
 
   @Override
   public void removeImageLayer(String layerName) throws IllegalArgumentException {
-    int indexLayerToBeRemoved = this.getIndexBasedOnName(layerName);
-
-    if (indexLayerToBeRemoved == -1) {
-      throw new IllegalArgumentException("No such layer exists!");
+    if (layerName == null) {
+      throw new IllegalArgumentException("Name cannot be null!");
     }
 
-    this.layers.remove(indexLayerToBeRemoved);
+    int indexLayerToBeRemoved = this.getIndexBasedOnName(layerName);
+
+    if (indexLayerToBeRemoved != -1) {
+      this.layers.remove(indexLayerToBeRemoved);
+    } else {
+      throw new IllegalArgumentException("Layer does not exist!");
+    }
 
     // reset current to be -1 if removing this layer means the layers will be empty
     if (this.layers.isEmpty()) {
       this.currentLayerNum = -1;
     }
-  }
 
-  @Override
-  public IImage getTopmostVisibleImage() {
-    for (int i = this.layers.size() - 1; i >= 0; i--) {
-      if (this.layers.get(i).isVisible() && this.layers.get(i).getImage() != null) {
-        return this.layers.get(i).getImage();
-      }
+    if (this.currentLayerNum == indexLayerToBeRemoved && !this.layers.isEmpty()) {
+      this.currentLayerNum = this.layers.size() - 1;
     }
-    throw new IllegalArgumentException("None of the layers are visible");
   }
 
-  @Override
-  public int getNumberOfLayers() {
+  /**
+   * Produces the number of layers in the multi-layered image.
+   */
+  private int getNumberOfLayers() {
     return this.layers.size();
   }
 
   @Override
-  public IImage getImageAtLayer(int index) {
-    if (index < 0 || index >= getNumberOfLayers()) {
-      throw new IllegalArgumentException("Impossible layer num");
-    }
-    IImage image = this.layers.get(index).getImage();
-    if (image != null) {
-      return image;
-    }
-    return null;
-  }
-
-  @Override
-  public boolean getVisibilityAtLayer(int index) {
-    if (index < 0 || index >= getNumberOfLayers()) {
-      throw new IllegalArgumentException("Impossible layer num");
-    }
-    return this.layers.get(index).isVisible();
-  }
-
-  @Override
-  public void loadLayer(IImage image) {
+  public void loadLayer(IImage image) throws IllegalArgumentException {
     if (image == null) {
       throw new IllegalArgumentException("Image is null");
     }
     if (sameDimensions(image)) {
       this.layers.get(currentLayerNum).setImage(image);
+    } else {
+      throw new IllegalArgumentException("Image(s) are not the same dimension!");
     }
   }
 
   @Override
-  public void loadAll(List<ILayer> importedLayers) {
+  public void loadAll(List<ILayer> importedLayers) throws IllegalArgumentException {
     if (importedLayers == null) {
       throw new IllegalArgumentException("Null layers.");
     }
-    this.layers.addAll(importedLayers);
+
+    for (int i = 0; i < importedLayers.size(); i++) {
+      // adds images if they are all the same dimension
+      if (this.sameDimensions(importedLayers.get(i).getImage())) {
+        this.layers.add(importedLayers.get(i));
+      } else {
+        throw new IllegalArgumentException("Image(s) are not the same dimension!");
+      }
+    }
   }
 
   /**
@@ -127,32 +122,64 @@ public class LayerModel implements ILayerModel {
    * first layer in the list of layers
    */
   private boolean sameDimensions(IImage image) {
-    if (!layers.isEmpty() && layers.get(0).getImage() != null) {
-      int firstImageHeight = this.layers.get(0).getImage().getHeight();
-      int firstImageWidth = this.layers.get(0).getImage().getWidth();
+    if (!layers.isEmpty()) {
 
-      return (firstImageWidth == image.getWidth()) && (firstImageHeight == image.getHeight());
+      if (layers.size() == 1) {
+        if (layers.get(0).getImage() == null) {
+          return true;
+        }
+
+        int firstImageHeight = this.layers.get(0).getImage().getHeight();
+        int firstImageWidth = this.layers.get(0).getImage().getWidth();
+
+        return (firstImageWidth == image.getWidth()) && (firstImageHeight == image.getHeight());
+      }
+
+      for (int i = 0; i < layers.size(); i++) {
+        if (layers.get(i).getImage() == null) {
+          return true;
+        }
+        int height1 = layers.get(i).getImage().getHeight();
+        int width1 = layers.get(i).getImage().getHeight();
+        int height2 = image.getHeight();
+        int width2 = image.getHeight();
+
+        if ((height1 != height2) || (width1 != width2)) {
+          return false;
+        }
+      }
+      return true;
     } else {
       return true;
     }
   }
 
   @Override
-  public void makeLayerInvisible(String layerName) {
-    int index = getIndexBasedOnName(layerName);
-    if (index == -1) {
-      throw new IllegalArgumentException("No such layer exists!");
+  public void makeLayerInvisible(String layerName) throws IllegalArgumentException {
+    if (layerName == null) {
+      throw new IllegalArgumentException("Name cannot be null!");
     }
-    this.layers.get(index).setVisibility(false);
+
+    int index = getIndexBasedOnName(layerName);
+    if (index != -1) {
+      this.layers.get(index).setVisibility(false);
+    } else {
+      throw new IllegalArgumentException("Layer does not exist!");
+    }
   }
 
   @Override
-  public void makeLayerVisible(String layerName) {
-    int index = getIndexBasedOnName(layerName);
-    if (index == -1) {
-      throw new IllegalArgumentException("No such layer exists!");
+  public void makeLayerVisible(String layerName) throws IllegalArgumentException {
+    if (layerName == null) {
+      throw new IllegalArgumentException("Name cannot be null!");
     }
-    this.layers.get(index).setVisibility(true);
+
+    int index = getIndexBasedOnName(layerName);
+    if (index != -1) {
+      this.layers.get(index).setVisibility(true);
+    } else {
+      throw new IllegalArgumentException("Layer does not exist!");
+    }
   }
 
   @Override
@@ -164,6 +191,8 @@ public class LayerModel implements ILayerModel {
     if (this.getIndexBasedOnName(layerName) != -1 && layers.get(this.getIndexBasedOnName(layerName))
         .isVisible()) {
       this.currentLayerNum = this.getIndexBasedOnName(layerName);
+    } else {
+      throw new IllegalArgumentException("Current cannot be set!");
     }
   }
 
@@ -179,7 +208,7 @@ public class LayerModel implements ILayerModel {
   }
 
   @Override
-  public void filterCurrent(IFilter filter) {
+  public void filterCurrent(IFilter filter) throws IllegalArgumentException {
     if (filter == null) {
       throw new IllegalArgumentException("Filter cannot be null!");
     }
@@ -187,11 +216,14 @@ public class LayerModel implements ILayerModel {
     if (this.currentLayerNum != -1 && canApplyOperation()) {
       IImage image = this.delegate.filter(this.layers.get(currentLayerNum).getImage(), filter);
       this.layers.get(this.currentLayerNum).setImage(image);
+    } else {
+      throw new IllegalArgumentException("Operation cannot be performed!");
     }
   }
 
   @Override
-  public void colorTransformCurrent(IColorTransformation colorTransformation) {
+  public void colorTransformCurrent(IColorTransformation colorTransformation)
+      throws IllegalArgumentException {
     if (colorTransformation == null) {
       throw new IllegalArgumentException("Filter cannot be null!");
     }
@@ -201,6 +233,8 @@ public class LayerModel implements ILayerModel {
           .colorTransformation(this.layers.get(currentLayerNum).getImage(),
               colorTransformation);
       this.layers.get(this.currentLayerNum).setImage(image);
+    } else {
+      throw new IllegalArgumentException("Operation cannot be performed!");
     }
   }
 
@@ -260,6 +294,23 @@ public class LayerModel implements ILayerModel {
     this.layers.add(layer);
 
     return image;
+  }
+
+  @Override
+  public List<ILayer> getLayers() {
+    List<ILayer> newList = new ArrayList<>();
+
+    for (int i = 0; i < layers.size(); i++) {
+      ILayer layer = new Layer(layers.get(i).getName());
+      layer.setVisibility(layers.get(i).isVisible());
+      if (layers.get(i).getImage() != null) {
+        layer.setImage(layers.get(i).getImage());
+      }
+
+      newList.add(layer);
+    }
+
+    return newList;
   }
 
   @Override

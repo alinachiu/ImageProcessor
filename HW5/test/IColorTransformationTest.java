@@ -5,7 +5,7 @@ import model.color.UserColorTransformation;
 import model.creator.CheckboardImageCreator;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,10 +50,10 @@ public class IColorTransformationTest {
             new Pixel(2, 1, 50, 200, 10),
             new Pixel(2, 2, 100, 40, 240),
             new Pixel(2, 3, 90, 88, 120)}};
-    this.sampleImage = new PPMImage(sampleImageGrid, "SampleImage");
+    this.sampleImage = new Image(sampleImageGrid, "SampleImage");
     this.sampleImageGrid1By2 = new IPixel[][]{{new Pixel(0, 0, 100, 50, 80),
         new Pixel(0, 1, 50, 200, 10)}};
-    this.sampleImage1By2 = new PPMImage(sampleImageGrid1By2, "OneByTwoGrid");
+    this.sampleImage1By2 = new Image(sampleImageGrid1By2, "OneByTwoGrid");
     this.grayscale = new Grayscale();
     this.sepia = new Sepia();
     this.userMatrix = new double[][]{{0.5, 0.5, 0.5}, {0.1, 0.1, 0.1}, {0.2, 0.2, 0.2}};

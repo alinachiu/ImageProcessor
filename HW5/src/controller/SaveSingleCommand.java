@@ -1,11 +1,13 @@
 package controller;
 
 import java.io.IOException;
+import java.util.List;
 import model.exports.IExport;
 import model.exports.JPEGExport;
 import model.exports.PNGExport;
 import model.exports.PPMExportFilename;
 import model.image.IImage;
+import model.layer.ILayer;
 import model.layer.ILayerModel;
 
 /**
@@ -34,14 +36,29 @@ public class SaveSingleCommand implements IPhotoCommands {
     if (m == null) {
       throw new IllegalArgumentException("Model is null.");
     }
-    IImage image = m.getTopmostVisibleImage();
-    IExport exporter = determineCorrectExporter(image);
+    IImage image = this.getTopmostVisibleImage(m.getLayers());
+    IExport exporter = this.determineCorrectExporter(image);
 
     try {
       exporter.export();
     } catch (IOException e) {
       throw new IllegalArgumentException("An error has occurred.");
     }
+  }
+
+  /**
+   * Finds the topmost visible image when given a list of layers in a model.
+   *
+   * @param layers the given list of layers to sort through
+   * @return the topmost visible image in a given list of layers, null if no such image exists
+   */
+  private IImage getTopmostVisibleImage(List<ILayer> layers) {
+    for (int i = layers.size() - 1; i >= 0; i--) {
+      if (layers.get(i).isVisible() && layers.get(i).getImage() != null) {
+        return layers.get(i).getImage();
+      }
+    }
+    return null;
   }
 
   /**

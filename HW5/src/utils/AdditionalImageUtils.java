@@ -28,6 +28,10 @@ public class AdditionalImageUtils {
       throw new IllegalArgumentException("File cannot be null!");
     }
 
+    if (!file.exists()) {
+      throw new IllegalArgumentException("File does not exist!");
+    }
+
     BufferedImage bufferedImage = ImageIO.read(file);
     IPixel[][] imageGrid = new Pixel[bufferedImage.getHeight()][bufferedImage.getWidth()];
 

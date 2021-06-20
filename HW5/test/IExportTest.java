@@ -1,23 +1,33 @@
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import model.color.IColorTransformation;
 import model.color.Sepia;
+import model.creator.IImageCreator;
 import model.exports.FailingWriter;
 import model.exports.IExport;
+import model.exports.JPEGExport;
+import model.exports.PNGExport;
 import model.exports.PPMExport;
 import model.creator.CheckboardImageCreator;
-import model.filter.Blur;
-import model.filter.IFilter;
+import model.exports.PPMExportFilename;
+import model.exports.TextFileExport;
 import model.image.IImage;
 import model.image.IPixel;
-import model.image.PPMImage;
+import model.image.Image;
 import model.image.Pixel;
 import model.managers.IOManager;
 import model.managers.InputFilenameManager;
+import model.managers.InputJPEGFilenameManager;
+import model.managers.InputPNGFilenameManager;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,7 +63,7 @@ public class IExportTest {
             new Pixel(2, 1, 50, 200, 10),
             new Pixel(2, 2, 100, 40, 240),
             new Pixel(2, 3, 90, 88, 120)}};
-    this.sampleImage = new PPMImage(sampleImageGrid, "SampleImage");
+    this.sampleImage = new Image(sampleImageGrid, "SampleImage");
     this.checkerboard = new CheckboardImageCreator(3, 4).createImage();
     this.exportSampleImage = new PPMExport(sampleImage, stringWriterSampleImage);
     this.exportCheckerboard = new PPMExport(checkerboard, stringWriterCheckerboard);
@@ -110,21 +120,6 @@ public class IExportTest {
   }
 
   @Test
-  public void testExportBlurSampleImage() throws IOException {
-    Writer writer = new StringWriter();
-    assertEquals("", writer.toString());
-    IFilter blur = new Blur();
-    IImage blurSampleImage = blur.apply(sampleImage);
-    IExport export = new PPMExport(blurSampleImage, writer);
-
-    export.export();
-
-    assertEquals("P3 4 3 255\n"
-        + "46 55 31 54 91 63 62 68 113 51 40 90 61 73 41 72 121 84 82 90 "
-        + "150 68 53 120 46 55 31 54 91 63 62 68 113 51 40 90 ", writer.toString());
-  }
-
-  @Test
   public void testExportCheckerboardImage() throws IOException {
     // tests to make sure the writer starts as empty
     assertEquals("", stringWriterCheckerboard.toString());
@@ -155,7 +150,11 @@ public class IExportTest {
 
   @Test
   public void testImportingAndExportingAnImage() throws IOException {
-    IImage image = new PPMImage("res/Checkerboard.ppm");
+    IImageCreator checkerboard = new CheckboardImageCreator(4, 4);
+    IImage board = checkerboard.createImage();
+    IExport exportBoard = new PPMExportFilename(board, "Checkerboard");
+    exportBoard.export();
+    IImage image = new Image("Checkerboard.ppm");
     Writer writer = new StringWriter();
     IExport export = new PPMExport(image, writer);
 
@@ -186,24 +185,215 @@ public class IExportTest {
         + "255 0 0 255 0 0 255 0 0 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 0 0 255 0 0 255 0 0 255 "
         + "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 0 0 255 0 0 255 0 0 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
         + "255 0 0 255 0 0 255 0 0 255 0 0 ", writer.toString());
+    File file = new File("Checkerboard.ppm");
+    file.delete();
   }
 
-  @Test
-  public void testExportImageAndThenReImportShouldHaveSame2DArrayContent() throws IOException {
-    IImage image = new PPMImage("res/Checkerboard.ppm");
-    IExport export = new PPMExport(image);
-
-    export.export();
-
-    // reimport image and check to see if the old and new are the same
-    IOManager manager = new InputFilenameManager("res/CheckerboardNew.ppm");
-    IImage newImage = manager.apply();
-
-    for (int i = 0; i < image.getImage().length; i++) {
-      for (int j = 0; j < image.getImage()[i].length; j++) {
-        assertEquals(image.getImage()[i][j], newImage.getImage()[i][j]);
-      }
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullImageForJPEGExport() {
+    try {
+      new JPEGExport(null);
+    } catch (IOException e) {
+      throw new IllegalArgumentException();
     }
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullImageForJPEGExportConstructorTwo() {
+    try {
+      new JPEGExport(null, "Sample");
+    } catch (IOException e) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullDesiredNameForJPEGExport() {
+    try {
+      new JPEGExport(sampleImage, null);
+    } catch (IOException e) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Test
+  public void testExportSepiaSampleJPEGImageDefaultName() throws IOException {
+    IColorTransformation sepia = new Sepia();
+    IImage sepiaSampleImage = sepia.apply(sampleImage);
+    IExport export = new JPEGExport(sepiaSampleImage);
+    export.export();
+    IOManager reimport = new InputJPEGFilenameManager("SampleImageNew.jpeg");
+    IImage transformedImg = reimport.apply();
+    IPixel[][] grid = new IPixel[][]{
+        {new Pixel(0, 0, 96, 82, 56), new Pixel(0, 1, 166, 152, 126),
+            new Pixel(0, 2, 114, 100, 74), new Pixel(0, 3, 127, 113, 87)},
+        {new Pixel(1, 0, 96, 82, 56), new Pixel(1, 1, 166, 152, 126),
+            new Pixel(1, 2, 114, 100, 74), new Pixel(1, 3, 127, 113, 87)},
+        {new Pixel(2, 0, 96, 82, 56), new Pixel(2, 1, 166, 152, 126),
+            new Pixel(2, 2, 114, 100, 74), new Pixel(2, 3, 127, 113, 87)}};
+    assertArrayEquals(grid, transformedImg.getImage());
+    assertEquals("SampleImageNew.jpeg", transformedImg.getFilename());
+    File file = new File("SampleImageNew.jpeg");
+    file.delete();
+  }
+
+  @Test
+  public void testExportSepiaSampleJPEGImageGivenName() throws IOException {
+    IColorTransformation sepia = new Sepia();
+    IImage sepiaSampleImage = sepia.apply(sampleImage);
+    IExport export = new JPEGExport(sepiaSampleImage, "SepiaImage");
+    export.export();
+    IOManager reimport = new InputJPEGFilenameManager("SepiaImage.jpeg");
+    IImage transformedImg = reimport.apply();
+    IPixel[][] grid = new IPixel[][]{
+        {new Pixel(0, 0, 96, 82, 56), new Pixel(0, 1, 166, 152, 126),
+            new Pixel(0, 2, 114, 100, 74), new Pixel(0, 3, 127, 113, 87)},
+        {new Pixel(1, 0, 96, 82, 56), new Pixel(1, 1, 166, 152, 126),
+            new Pixel(1, 2, 114, 100, 74), new Pixel(1, 3, 127, 113, 87)},
+        {new Pixel(2, 0, 96, 82, 56), new Pixel(2, 1, 166, 152, 126),
+            new Pixel(2, 2, 114, 100, 74), new Pixel(2, 3, 127, 113, 87)}};
+    assertArrayEquals(grid, transformedImg.getImage());
+    assertEquals("SepiaImage.jpeg", transformedImg.getFilename());
+    File file = new File("SepiaImage.jpeg");
+    file.delete();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullImageForPNGExport() {
+    new PNGExport(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullImageForPNGExportConstructorTwo() {
+    try {
+      new PNGExport(null, "Sample");
+    } catch (IOException e) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullDesiredNameForPNGExport() {
+    try {
+      new PNGExport(sampleImage, null);
+    } catch (IOException e) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Test
+  public void testExportSepiaSamplePNGImageDefaultName() throws IOException {
+    IColorTransformation sepia = new Sepia();
+    IImage sepiaSampleImage = sepia.apply(sampleImage);
+    IExport export = new PNGExport(sepiaSampleImage);
+    export.export();
+    IOManager reimport = new InputPNGFilenameManager("SampleImageNew.png");
+    IImage transformedImg = reimport.apply();
+    IPixel[][] grid = new IPixel[][]{
+        {new Pixel(0, 0, 92, 81, 63), new Pixel(0, 1, 173, 155, 120),
+            new Pixel(0, 2, 114, 101, 79), new Pixel(0, 3, 124, 111, 85)},
+        {new Pixel(1, 0, 92, 81, 63), new Pixel(1, 1, 173, 155, 120),
+            new Pixel(1, 2, 114, 101, 79), new Pixel(1, 3, 124, 111, 85)},
+        {new Pixel(2, 0, 92, 81, 63), new Pixel(2, 1, 173, 155, 120),
+            new Pixel(2, 2, 114, 101, 79), new Pixel(2, 3, 124, 111, 85)}};
+    assertArrayEquals(grid, transformedImg.getImage());
+    assertEquals("SampleImageNew.png", transformedImg.getFilename());
+    File file = new File("SampleImageNew.png");
+    file.delete();
+  }
+
+  @Test
+  public void testExportSepiaSamplePNGImageGivenName() throws IOException {
+    IColorTransformation sepia = new Sepia();
+    IImage sepiaSampleImage = sepia.apply(sampleImage);
+    IExport export = new PNGExport(sepiaSampleImage, "SepiaImage");
+    export.export();
+    IOManager reimport = new InputPNGFilenameManager("SepiaImage.png");
+    IImage transformedImg = reimport.apply();
+    IPixel[][] grid = new IPixel[][]{
+        {new Pixel(0, 0, 92, 81, 63), new Pixel(0, 1, 173, 155, 120),
+            new Pixel(0, 2, 114, 101, 79), new Pixel(0, 3, 124, 111, 85)},
+        {new Pixel(1, 0, 92, 81, 63), new Pixel(1, 1, 173, 155, 120),
+            new Pixel(1, 2, 114, 101, 79), new Pixel(1, 3, 124, 111, 85)},
+        {new Pixel(2, 0, 92, 81, 63), new Pixel(2, 1, 173, 155, 120),
+            new Pixel(2, 2, 114, 101, 79), new Pixel(2, 3, 124, 111, 85)}};
+    assertArrayEquals(grid, transformedImg.getImage());
+    assertEquals("SepiaImage.png", transformedImg.getFilename());
+    File file = new File("SepiaImage.png");
+    file.delete();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullImageForPPMExportFilename() throws IOException {
+    new PPMExportFilename(null, "SampleImg");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullFilenameForPPMExportFilename() throws IOException {
+    new PPMExportFilename(sampleImage, null);
+  }
+
+  @Test
+  public void testExportSepiaSamplePPMImageGivenName() throws IOException {
+    IColorTransformation sepia = new Sepia();
+    IImage sepiaSampleImage = sepia.apply(sampleImage);
+    IExport export = new PPMExportFilename(sepiaSampleImage, "SepiaPPMImage");
+    export.export();
+    IOManager reimport = new InputFilenameManager("SepiaPPMImage.ppm");
+    IImage transformedImg = reimport.apply();
+    IPixel[][] grid = new IPixel[][]{
+        {new Pixel(0, 0, 92, 81, 63), new Pixel(0, 1, 173, 155, 120),
+            new Pixel(0, 2, 114, 101, 79), new Pixel(0, 3, 124, 111, 85)},
+        {new Pixel(1, 0, 92, 81, 63), new Pixel(1, 1, 173, 155, 120),
+            new Pixel(1, 2, 114, 101, 79), new Pixel(1, 3, 124, 111, 85)},
+        {new Pixel(2, 0, 92, 81, 63), new Pixel(2, 1, 173, 155, 120),
+            new Pixel(2, 2, 114, 101, 79), new Pixel(2, 3, 124, 111, 85)}};
+    assertArrayEquals(grid, transformedImg.getImage());
+    assertEquals("SepiaPPMImage.ppm", transformedImg.getFilename());
+    File file = new File("SepiaPPMImage.ppm");
+    file.delete();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullDirForTextFileExport() {
+    new TextFileExport(null, "Testing adding text...");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullTextForTextFileExport() {
+    new TextFileExport("res/", null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIOExceptionTextFileExport() {
+    new TextFileExport("unknown/", "Testing adding text...");
+  }
+
+  @Test
+  public void testTextFileExport() throws IOException {
+    File f = new File("res/tester/");
+    if (f.exists()) {
+      f = new File("res/" + "tester/" + "1");
+    }
+    f.mkdir();
+    TextFileExport export = new TextFileExport("tester", "Testing adding text...");
+    export.export();
+    BufferedReader br = new BufferedReader(new FileReader("testerLayerInfo.txt"));
+    try {
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
+
+      while (line != null) {
+        sb.append(line);
+        sb.append(System.lineSeparator());
+        line = br.readLine();
+      }
+      String everything = sb.toString();
+      assertEquals("Testing adding text...\n", everything);
+    } finally {
+      br.close();
+    }
+    File file = new File("testerLayerInfo.txt");
+    file.delete();
+  }
 }

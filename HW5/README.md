@@ -35,17 +35,15 @@ IPixel[][] sampleImageGrid = new IPixel[][]{{new Pixel(0, 0, 100, 50, 80),
 this.sampleImage = new PPMImage(sampleImageGrid, "SampleImage");
 ```
 
-## How to use the Model
+## How to use the Model Class
 
 The Model class implements the IModel interface which can perform actions such as filtering a given
-image, performing color transformations on a given image, creating an image based on a user's input,
-exporting a given image, and importing an image based on an IOManager which manages files based on
-their names or the files themselves. (Note: The Model class itself is field-less). Each method works
-by passing in the respective function object as well as the given image that will be manipulated or
-exported. In the case of importing and creating a given image, only the function object is
-necessary (more on how to use each function object below). If any arguments of any methods are null,
-an IllegalArgumentException will be thrown. Additionally, if there are any unforeseen issues with
-exporting the image as a file, an IOException will be thrown.
+image, performing color transformations on a given image, and creating an image based on a user's 
+input. (Note: The Model class itself is field-less). Each method works by passing in the respective 
+function object as well as the given image that will be manipulated or created. In the case of 
+creating a given image, only the function object is necessary (more on how to use each function 
+object below). If any arguments of any methods are null, an IllegalArgumentException 
+will be thrown.
 
 Here are some examples of how to call each method properly in the model:
 
@@ -61,12 +59,99 @@ IImage grayScaleDog = model.color(dog, new Grayscale());
 
 // create an image of a checkerboard with tiles of size 4 and 6 tiles total with default colors
 IImage newCheckerboard = model.createImage(new CheckerboardImageCreator(4,6));
+```
 
-// export the new checkerboard image
-model.exportImage(new PPMExport(newCheckerboard));
+## How to use the LayerModel Class
 
-// import a koala image
-model.importImage(new InputFilenameManager("res/koala.ppm")));
+The LayerModel class implements the ILayerModel interface, which can perform all the actions an IModel can as well as supporting multi-layered image processing functions. The additional methods can perform actions such as creating a new image layer based on a given name tht has no image associated with it and has a default transparency setting of true, removing an image layer based on a given name, loading a pre-existing image into the current layer, loading a group of layers at once based on a text file, making a layer visible/invisible, setting the current layer (the one that the program will perform actions on), filtering the current, performing color transformations on the current, and getting a deep copy of the layers in the model (Note: The LayerModel class itself is field-less). Each delegated method works by passing in the respective function object as well as the given image that will be manipulated/created/used as a multi-layered class. For the new methods, most rely on getting the name of the layer in String format. If any arguments of any methods are null, an IllegalArgumentException will be thrown.
+
+Here are some examples of how to call each method properly in the LayerModel:
+
+```Java
+ILayerModel model = new LayerModel():
+
+// create new image layers
+model.createImageLayer("first");
+model.createImageLayer("second");
+model.createImageLayer("another");
+
+// remove non-existent layer, should do nothing and remove "another" layer
+model.removeImageLayer("fake");
+model.removeImageLayer("another");
+
+// load checkerboard into the second layer after setting it as current
+model.setCurrent("second");
+model.loadLayer("res/Checkerboard.ppm");
+
+// load based on a list of layers
+List<ILayer> list = new ArrayList<>();
+list.add(new Layer("another"));
+list.add(new Layer("dog"));
+
+model.loadAll(list);
+
+// make layer invisible and then visible again
+model.makeLayerInvisible("another");
+model.makeLayerVisible("another");
+
+// filter and color transform on the current
+model.filterCurrent(new Blur());
+model.colorTransformCurrent(new Sepia());
+
+// get deep copy of layers
+List<ILayer> layers = model.getLayers();
+
+```
+## Notes about Each Method in ILayerModel
+- createImageLayer: creates a new layer in a list of existing layers. If a layer with the given naem already exists, it will do nothing. If the layer is the first to be created, it becomes the current by default
+- removeImageLayer: removes an existing layer based on a given name, will do nothing if no such layer exists
+- loadLayer: loads in a given image to the current layer. If the image is not the same dimensions as the previous images in the model, the image will not be loaded into the layer
+- loadAll: loads a multi-layered image based on a text file with information about them. if one or more of the layers does not exist, then an exception will be thrown. If any of the layers are different dimensions from the others, they will not be added either.
+- makeLayerInvisible: makes a layer visible based on a given layer name, will do nothing if the layer does not exist
+- makeLayerVisible: makes a layer invisible based on a given layer name, will do nothing if the layer does not exist
+- setCurrent: sets the given layer based on its name as the current layer to perform operations on. If the layer does not exist it will do nothing.
+- filterCurrent: applies the given filter onto the image associated with the current layer. if the current layer does not exist, has a null image, or is invisible, nothing will be done.
+- colorTransformCurrent: applies the given color transformation onto the image associated with the current layer. if the current layer does not exist, has a null image, or is invisible, nothing will be done.
+
+## What is a Layer?
+A Layer implements the interface ILayer and has a name, image associated with it, and a visibility value. It can perform actions such as setting the image, setting the visibility, getting its name, image, and visibility levels.
+
+Here is how the layer methods are used:
+```Java
+ILayer layer = new Layer("first");
+
+// set layer as checkerboard image
+layer.setImage(new Image("res/Checkerboard.ppm"));
+
+// set visibility to be false
+layer.setVisibility(false);
+
+// get name of layer, should be "first"
+String name = layer.getName();
+
+// get Image
+IImage image = layer.getImage();
+
+// get visibility
+boolean visibility = layer.isVisible();
+```
+
+## How to use the Controller
+The controller follows the command design pattern and can either take in user input or a script file to perform image layer manipulation. More about the specifics of each known command can be found in the USME file.
+
+
+## The View
+The view can do two things: append new messages or get the current state of the model using the methods renderMessage and renderLayerState.
+
+They are used as follows:
+```Java
+IImageProcessingView view = new SimpleIImageProcessingView(new LayerModel());
+
+// render a given message
+view.renderMessage("hello!");
+
+// render the current model state
+view.renderLayerState();
 ```
 
 ## Filtering
@@ -135,7 +220,7 @@ IImage newBlackAndWhiteCheckerboard = blackAndWhiteCreator.createImage();
 
 To import an image, use objects which implement the IOManager class, which manages different input
 types such as files and filenames. It uses a method apply to create the IImage associated with the
-field(s) of the class. An IllegalArgumentException will be thrown if the file/filename is not found.
+field(s) of the class. An IllegalArgumentException will be thrown if the file/filename is not found. To import an image based on a text file, can use any object that implements the IOLayerManager class which converts a text file in a specific format into a List of ILayers.
 
 Here is an example of how to correctly import an image using a filename/file:
 
@@ -147,6 +232,25 @@ IImage oceanFilename = filenameManager.apply();
 // imports an image of the ocean using a file
 IOManager fileManager = new InputFileManager(new File("res/ocean.ppm"));
 IImage oceanFile = fileManager.apply();
+
+// imports a jpeg image
+IOManager fileJPEGManager = new InputJPEGFileManager(new File("res/flower.jpeg"));
+IImage flowerFile = fileJPEGManager.apply();
+
+IOManager filenameJPEGManager = new InputJPEGFilenameManager("res/flower.jpeg");
+IImage flowerFilename = filenameJPEGManager.apply();
+
+// imports a png image
+IOManager filePNGManager = new InputPNGFileManager(new File("res/flower.png"));
+IImage flowerFile = filePNGManager.apply();
+
+IOManager filenamePNGManager = new InputPNGFilenameManager("res/flower.png");
+IImage flowerFilename = filenamePNGManager.apply();
+
+// imports a list of layers based on a text file
+IOLayerManager layerManager = new InputTextFilenameManager("res/a/layerInfo.txt");
+List<ILayer> listOfLayers = layerManager.apply();
+
 ```
 
 To export an image, use objects which implement the IExport interface. In the case of the PPMExport
@@ -155,7 +259,7 @@ image's given height, width, and image grid. The export method exports the given
 correct format such as the .ppm format. An IOException is thrown if there are any issues with
 writing. Can either use the default constructor which writes a file or pass in a type of Writer
 (i.e. StringWriter or PrintWriter). Throws an IOException if any I/O error occurs in the constructor
-or in the export method.
+or in the export method. JPEG and PNG images can also be exported via filename
 
 Here is an example of how to correctly export an image using a filename:
 
@@ -172,14 +276,20 @@ IExport export = new PPMExport(dog);
 export.export();
 ```
 
-## Note about the ImageUtil class
+## The JAR File
+If not already placed there, please run the JAR file from the root submission folder. The JAR file can be run using user input by following the commands in the USEME or using a given script.
 
-The ImageUtil class was used to help import images based on their filename.
+## Note about the ImageUtil and AdditionalImageUtil classes
+
+The ImageUtil class was used to help import images based on their filename. The AdditionalImageUtil
+class was also used to help import and export images.
 
 ## Sources for Images:
 
 - Dog Image: DL, JackieLou. “Puppy Lying Down.” Pixabay, 13 Nov. 2018,
-  <pixabay.com/photos/puppy-pup-puppy-lying-down-3813378/>.
+  <http://pixabay.com/photos/puppy-pup-puppy-lying-down-3813378/>.
 - Ocean Image: Highsmith, Carol "Photographs of buildings in Los Angeles, California and the
   surrounding area." Picryl, 01 Jan. 2005, <https://picryl.com/media/
   photographs-of-buildings-in-los-angeles-california-and-the-surrounding-area-51>.
+- Flower Image: Koshy, Koshy. "Pretty Flower." Flickr, 31 Aug. 2008, 
+  <https://www.flickr.com/photos/kkoshy/2825871499>

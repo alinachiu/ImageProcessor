@@ -1,6 +1,6 @@
 import static org.junit.Assert.assertArrayEquals;
 
-import model.ImageUtil;
+import utils.ImageUtil;
 import model.creator.CheckboardImageCreator;
 import model.creator.IImageCreator;
 import model.image.IPixel;

@@ -1,5 +1,6 @@
 package model.layer;
 
+import java.util.Objects;
 import model.image.IImage;
 
 /**
@@ -21,9 +22,9 @@ public class Layer implements ILayer {
     if (name == null) {
       throw new IllegalArgumentException("Name cannot be null");
     }
-    image = null;
+    this.image = null;
     this.name = name;
-    visibility = true;
+    this.visibility = true;
   }
 
   @Override
@@ -65,4 +66,31 @@ public class Layer implements ILayer {
           + ", Visibility: " + this.visibility;
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Layer layer = (Layer) o;
+
+    if (this.image != null && layer != null) {
+      return visibility == layer.visibility && image.getFilename()
+          .equalsIgnoreCase(layer.image.getFilename())
+          && Objects.deepEquals(image.getImage(), image.getImage())
+          && name.equalsIgnoreCase(layer.name);
+    } else {
+      return visibility == layer.visibility && image == layer.image
+          && name.equalsIgnoreCase(layer.name);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, visibility);
+  }
+
 }
