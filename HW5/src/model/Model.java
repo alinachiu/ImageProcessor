@@ -1,10 +1,7 @@
 package model;
 
-import model.exports.IExport;
-import java.io.IOException;
 import model.creator.IImageCreator;
 import model.image.IImage;
-import model.managers.IOManager;
 import model.color.IColorTransformation;
 import model.filter.IFilter;
 
@@ -40,24 +37,5 @@ public final class Model implements IModel {
     }
 
     return creator.createImage();
-  }
-
-  @Override
-  public void exportImage(IExport export)
-      throws IllegalArgumentException, IOException {
-    if (export == null) {
-      throw new IllegalArgumentException("One or more arguments is null!");
-    }
-
-    export.export();
-  }
-
-  @Override
-  public IImage importImage(IOManager input) throws IllegalArgumentException {
-    if (input == null) {
-      throw new IllegalArgumentException("Argument(s) can't be null!");
-    }
-
-    return input.apply();
   }
 }

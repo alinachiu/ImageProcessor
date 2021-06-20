@@ -2,6 +2,7 @@ package model.exports;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
 * Represents a class which manages a given {@code IImage} and exports the Image based on this
@@ -25,7 +26,7 @@ public class TextFileExport implements IExport {
      }
      this.content = content;
      try {
-      this.out = new PrintWriter("res/" + desiredDir + "/layerInfo.txt");
+      this.out = new PrintWriter(desiredDir + "layerInfo.txt");
      } catch (IOException e) {
       throw new IllegalArgumentException("Cannot write to file");
      }

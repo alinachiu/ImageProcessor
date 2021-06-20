@@ -1,13 +1,15 @@
 package model.managers;
 
 import java.io.IOException;
-import model.AdditionalImageUtils;
+import utils.AdditionalImageUtils;
 import java.io.File;
 import model.image.IImage;
 import model.image.IPixel;
+import model.image.Image;
 
 /**
- * Represents a class that manages the given png input file and returns the file's associated image.
+ * Represents a class that manages the given png input file and returns the file's associated
+ * image.
  */
 public class InputPNGFileManager implements IOManager {
 

@@ -2,18 +2,13 @@ package model.exports;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import model.image.IImage;
 
 /**
  * Represents an object that can export images to the PPM format and name them based on a given file
  * name.
  */
-public class PPMExportFilename implements IExport {
-
-  private final IImage image;
-  private final Writer wr;
-  private final IExport delegate;
+public class PPMExportFilename extends PPMExport implements IExport {
 
   /**
    * Constructs a {@code PPMExportFilename} object with a default Writer for writing a file.
@@ -25,32 +20,41 @@ public class PPMExportFilename implements IExport {
    */
   public PPMExportFilename(IImage image, String filename)
       throws IllegalArgumentException, IOException {
-    if (image == null) {
-      throw new IllegalArgumentException("Cannot have a null image.");
-    }
-    this.image = image;
-    this.delegate = new PPMExport(image);
-    this.wr = new FileWriter(filename);
+    super(checkNullImage(image), new FileWriter(checkNullDesiredName(filename) + ".ppm"));
+
   }
 
   /**
-   * Constructs a {@code PPMOutputFileManager} object with a given Writer.
+   * Checks if the given image from the constructor is null before calling super on it.
    *
-   * @param image the given image to be converted into a file
-   * @throws IllegalArgumentException if any argument is null
-   * @throws IOException if any I/O error(s) occur when creating the delegate
+   * @param image the image to be checked.
+   * @return the image if it was not null.
+   * @throws IllegalArgumentException if the image is null.
    */
-  public PPMExportFilename(IImage image, Writer wr) throws IOException {
-    if (image == null || wr == null) {
-      throw new IllegalArgumentException("Cannot have any null arguments.");
+  private static IImage checkNullImage(IImage image) {
+    if (image == null) {
+      throw new IllegalArgumentException("Image is null.");
     }
-    this.image = image;
-    this.delegate = new PPMExport(image);
-    this.wr = wr;
+    return image;
   }
+
+  /**
+   * Checks if the given name from the constructor is null before calling super on it.
+   *
+   * @param desiredName the name to be checked.
+   * @return the name if it was not null.
+   * @throws IllegalArgumentException if the name is null.
+   */
+  private static String checkNullDesiredName(String desiredName) {
+    if (desiredName == null) {
+      throw new IllegalArgumentException("Name is null.");
+    }
+    return desiredName;
+  }
+
 
   @Override
   public void export() throws IOException {
-    this.delegate.export();
+    super.export();
   }
 }

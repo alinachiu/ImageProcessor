@@ -1,6 +1,5 @@
 package model.layer;
 
-import model.IPhotoOperations;
 import model.image.IImage;
 
 /**
@@ -51,12 +50,19 @@ public class Layer implements ILayer {
   }
 
   @Override
-    public boolean isVisible() {
-      return this.visibility;
-    }
+  public boolean isVisible() {
+    return this.visibility;
+  }
 
   @Override
-  public IImage applyOperation(IPhotoOperations operation) {
-    return operation.apply(image);
+  public String toString() {
+    if (this.image == null) {
+      return "Name of Layer: " + this.name
+          + ", No Image Associated With This Layer"
+          + ", Visibility: " + this.visibility;
+    } else {
+      return "Name of Layer: " + this.name + ", Image Filename: " + this.image.getFilename()
+          + ", Visibility: " + this.visibility;
+    }
   }
 }

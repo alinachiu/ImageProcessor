@@ -1,7 +1,5 @@
 package model.layer;
 
-
-import model.IPhotoOperations;
 import model.image.IImage;
 
 public interface ILayer {
@@ -39,6 +37,4 @@ public interface ILayer {
    */
   boolean isVisible();
 
-  // TODO javadoc
-  IImage applyOperation(IPhotoOperations operation);
 }

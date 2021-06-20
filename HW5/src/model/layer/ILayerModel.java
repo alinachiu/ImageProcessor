@@ -1,9 +1,10 @@
 package model.layer;
 
-import java.io.File;
 import java.util.List;
 import model.IModel;
-import model.IPhotoOperations;
+import model.color.IColorTransformation;
+import model.filter.IFilter;
+import model.image.IImage;
 
 /**
  * Represents a set of layers of images that are able to be added or removed.
@@ -22,82 +23,105 @@ public interface ILayerModel extends IModel {
   /**
    * Represents a function to remove the layer with the given name from the {@link ILayer}.
    *
-   * @param name the name of the layer being created
+   * @param name the name of the layer being removed
    * @throws IllegalArgumentException if the given name is null or if no such layer exists
    */
   void removeImageLayer(String name) throws IllegalArgumentException;
 
+  /**
+   * Loads the given image into the current layer by setting the layer's image to the given image,
+   * as long as the image's dimensions are the same as the previous images or if it is the first
+   * image to be placed in a layer.
+   *
+   * @param image the image to be loaded into the current layer
+   * @throws IllegalArgumentException if the given image is null
+   */
+  void loadLayer(IImage image);
 
   /**
-   * Saves/exports the current layer as the file type that is was loaded as and it will be saved
-   * with the given filename
+   * Loads/create a multi-layered image using the given imported layers.
    *
-   * @throws IllegalArgumentException if the given filename is null or if the desired file type is
-   *                                  invalid/not available.
+   * @param importedLayers the multi-layers to be instantiated
+   * @throws IllegalArgumentException if the given list of layers is null.
    */
-  void saveLayer(String fileName) throws IllegalArgumentException;
-
-  /**
-   * Saves the multi-layered image as a collections of files (one for each layer as a regular image
-   * and one text files that stores the locations of all the layer files).
-   *
-   * @param desiredDir the name the user wants to name the directory as
-   * @throws IllegalArgumentException if the multi-layered image is empty.
-   */
-  void saveAll(String desiredDir);
-
-  /**
-   * Loads in one or more image(s) that have the given filename(s) to be assigned to the current
-   * layer. If the user has not created enough layers before trying to load in images, the method
-   * will ignore the extra images (i.e. if there are only two layers but the user attempts to load
-   * in four, the first two will load in and the other two will be ignored). If the given image is
-   * not the same dimension as the previous layers, the image will not be loaded in.
-   *
-   * @throws IllegalArgumentException if the given filename is null or cannot find a file with the
-   *                                  given filename
-   */
-  void loadLayer(String... filename);
-
-  /**
-   * Loads/Creates a given set of layered images based on the file name of the text file associated
-   * with the LIME.
-   *
-   * @throws IllegalArgumentException if the given multi-layered image to be loaded is null or if
-   *                                  cannot find the image associated with the string(s)
-   */
-  void loadAll(String filename);
+  void loadAll(List<ILayer> importedLayers);
 
   /**
    * Makes the layer that has the given name invisible.
    *
-   * @param layerName if the given name is null or if the name does not exist within the layers.
+   * @param layerName the name of the layer to make invisible
+   * @throws IllegalArgumentException if the given name is null or if the name does not exist within
+   *                                  the layers.
    */
   void makeLayerInvisible(String layerName);
 
   /**
    * Makes the layer that has the given name visible.
    *
-   * @param layerName if the given name is null or if the name does not exist within the layers.
+   * @param layerName the name of the layer to make visible
+   * @throws IllegalArgumentException if the given name is null or if the name does not exist within
+   *                                  the layers.
    */
   void makeLayerVisible(String layerName);
 
   /**
-   * Sets the given layer based on its name to be the current layer to perform operations on.
+   * Produces the topmost visible image within the layers.
    *
-   * @param layerName the name of the layer to be operated on
-   * @throws IllegalArgumentException if the layer name is null or if the layer does not exist
+   * @throws IllegalArgumentException if all the layers are invisible/none are visible.
    */
-  void setCurrent(String layerName);
+  IImage getTopmostVisibleImage();
 
   /**
-   * Applies the given {@code IPhotoOperations} to the current layer. If there is no image
-   * associated with the layer or if the layer is invisible, then the operation will not be
-   * applied.
-   *
-   * @param operation the operation to be applied to the current layer
+   * Produces the number of layers in the multi-layered image.
    */
-  void applyOperation(IPhotoOperations operation);
+  int getNumberOfLayers();
 
+  /**
+   * Produces the image within the multi-layer image that is at the given index.
+   *
+   * @param index the index at which we want the image from the layers
+   * @return the image at the given index.
+   * @throws IllegalArgumentException if the index is out of bounds (negative or more than the
+   *                                  number of layers available)
+   */
+  IImage getImageAtLayer(int index) throws IllegalArgumentException;
+
+  /**
+   * Produces the visibility of the layer at the given index.
+   *
+   * @param index the index at which we want the visibility from the layers
+   * @return boolean that is true if the layer is visible.
+   * @throws IllegalArgumentException if the index is out of bounds (negative or more than the
+   *                                  number of layers available)
+   */
+  boolean getVisibilityAtLayer(int index) throws IllegalArgumentException;
+
+  /**
+   * Sets the given layer based on its name to be the current layer to perform operations on. If the
+   * layer does not exist, the current will not be set to it.
+   *
+   * @param layerName the name of the layer to be operated on
+   * @throws IllegalArgumentException if the layer name is null
+   */
+  void setCurrent(String layerName) throws IllegalArgumentException;
+
+  /**
+   * Applies the given filter onto the image in the current layer, as long as the current image
+   * isn't null and invisible.
+   *
+   * @param filter the type of filter to apply.
+   * @throws IllegalArgumentException if the given filter is null
+   */
+  void filterCurrent(IFilter filter) throws IllegalArgumentException;
+
+  /**
+   * Applies the given color transformation onto the image in the current layer, as long as the
+   * current image isn't null and invisible.
+   *
+   * @param colorTransformation the type of colorTransformation to apply.
+   * @throws IllegalArgumentException if the given colorTransformation is null
+   */
+  void colorTransformCurrent(IColorTransformation colorTransformation);
 
 }
 

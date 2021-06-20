@@ -1,12 +1,8 @@
 package model;
 
-import model.exports.IExport;
-import java.io.IOException;
 import model.creator.CheckboardImageCreator;
 import model.creator.IImageCreator;
 import model.image.IImage;
-import model.managers.IOManager;
-import model.managers.InputFileManager;
 import model.color.IColorTransformation;
 import model.filter.IFilter;
 
@@ -50,22 +46,4 @@ public interface IModel {
    */
   IImage createImage(IImageCreator creator) throws IllegalArgumentException;
 
-  /**
-   * Exports an image in the correct format based on a given {@link IExport} object.
-   *
-   * @param export the given export function object which exports the correct file version of an
-   *               object
-   * @throws IllegalArgumentException if any argument is null
-   * @throws IOException              if there is a problem with attempting to write the file
-   */
-  void exportImage(IExport export) throws IllegalArgumentException, IOException;
-
-  /**
-   * Imports a given image in the correct format based on a given {@link InputFileManager} object.
-   *
-   * @param input the given import manager which manages inputs to create a new Image
-   * @return the image based on the given manager
-   * @throws IllegalArgumentException if any argument is null
-   */
-  IImage importImage(IOManager input) throws IllegalArgumentException;
 }

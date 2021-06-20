@@ -2,7 +2,7 @@ package model.managers;
 
 import java.io.File;
 import model.image.IImage;
-import model.ImageUtil;
+import utils.ImageUtil;
 import model.image.Image;
 
 /**

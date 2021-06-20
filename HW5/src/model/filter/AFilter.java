@@ -32,7 +32,7 @@ public abstract class AFilter implements IFilter {
         imageGrid[i][j] = applyToEachPixel(i, j, copy, numSidePix);
       }
     }
-    return new Image(imageGrid, image.getFilename() + "Filter");
+    return new Image(imageGrid, image.getFilename());
   }
 
   /**
@@ -46,7 +46,7 @@ public abstract class AFilter implements IFilter {
    * @param numSidePix the number of pixels between the center of the filter matrix and the edge of
    *                   the filter matrix
    * @return the current pixel transformed to have a new red, green, and blue based on the filter
-   *         matrix values
+   * matrix values
    * @throws IllegalArgumentException if the image grid is null
    */
   protected IPixel applyToEachPixel(int x, int y, IPixel[][] imageGrid, int numSidePix) {
@@ -86,7 +86,7 @@ public abstract class AFilter implements IFilter {
    * @param possCoor the possible coordinate that the boundary will have
    * @param limit    the limit which the coordinate can be
    * @return the appropriate coordinate. either the possible coordinate given or the edge coordinate
-   *         depending on if the possible coordinate is within the image grid boundaries.
+   * depending on if the possible coordinate is within the image grid boundaries.
    */
   protected int getCoordinate(int possCoor, int limit) {
     if (possCoor < 0) {

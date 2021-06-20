@@ -1,36 +1,20 @@
 package model.layer;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import model.IModel;
-import model.IPhotoOperations;
 import model.Model;
 import model.color.IColorTransformation;
 import model.creator.IImageCreator;
-import model.exports.IExport;
-import model.exports.JPEGExport;
-import model.exports.PNGExport;
-import model.exports.PPMExportFilename;
-import model.exports.TextFileExport;
 import model.filter.IFilter;
 import model.image.IImage;
-import model.managers.IOLayerManager;
-import model.managers.IOManager;
-import model.managers.InputFilenameManager;
-import model.managers.InputJPEGFilenameManager;
-import model.managers.InputPNGFilenameManager;
-import model.managers.InputTextFilenameManager;
 
 // TODO ask about backwards compatibility, write USEME/tests, two examples of script file
 //  JAR file, updated class diagram, updated README
 
 // TODO split tests:
-//  - Alina: Controller, abstract out controller a bit more, Imports (all), LayerModel
-//    (createImageLayer, removeImageLayer, loadLayer, loadAll, setCurrent, applyOperation, make
-//    abstract test class for shared model features), UML, update README, USEME, test to see if
-//    JAR file works, AdditionalImageUtils, two examples of script files
+//  - Alina: Controller, Imports (all), LayerModel createImageLayer, removeImageLayer, setCurrent,),
+//    UML, update README, USEME, test to see if JAR file works, one example of script files add where to put JAR file in README
 //  - Jessica: IPhotoOperations (abstract), Exports (all), Layer class, LayerModel (saveLayer,
 //    saveAll, makeLayerInvisible/visible), mocks, view, change PNG and JPEG export to
 //    AdditionalImageUtils, abstract out save + saveAll, ask TA about backwards compatibility
@@ -43,7 +27,7 @@ import model.managers.InputTextFilenameManager;
 public class LayerModel implements ILayerModel {
 
   private final IModel delegate;
-  private List<ILayer> layers;
+  private final List<ILayer> layers;
   private int currentLayerNum;
 
   /**
@@ -74,165 +58,71 @@ public class LayerModel implements ILayerModel {
     }
 
     this.layers.remove(indexLayerToBeRemoved);
+
+    // reset current to be -1 if removing this layer means the layers will be empty
+    if (this.layers.isEmpty()) {
+      this.currentLayerNum = -1;
+    }
   }
 
   @Override
-  public void saveLayer(String fileName) {
-    if (fileName == null) {
-      throw new IllegalArgumentException("Desired filename is null");
-    }
-
-    IImage image = getTopmostVisibleImage();
-
-    String[] splitFilename = fileName.split("\\.");
-    String fileType = splitFilename[1];
-    IExport exporter;
-
-    try {
-      switch (fileType) {
-        case "ppm":
-          exporter = new PPMExportFilename(image, splitFilename[0]);
-          break;
-        case "jpeg":
-          exporter = new JPEGExport(image, splitFilename[0]);
-          break;
-        case "png":
-          exporter = new PNGExport(image, splitFilename[0]);
-          break;
-        default:
-          throw new IllegalArgumentException("Cannot save the layer with that file type.");
-      }
-      exporter.export();
-    } catch (IOException e) {
-      throw new IllegalArgumentException("An error has occurred.");
-    }
-  }
-
-  /**
-   * Produces the topmost visible image within the layers.
-   *
-   * @throws IllegalArgumentException if all the layers are invisible/none are visible.
-   */
-  private IImage getTopmostVisibleImage() {
-    for (int i = this.layers.size() - 1; i >= 0; i++) {
-      if (this.layers.get(i).isVisible()) {
+  public IImage getTopmostVisibleImage() {
+    for (int i = this.layers.size() - 1; i >= 0; i--) {
+      if (this.layers.get(i).isVisible() && this.layers.get(i).getImage() != null) {
         return this.layers.get(i).getImage();
       }
     }
     throw new IllegalArgumentException("None of the layers are visible");
   }
 
+  @Override
+  public int getNumberOfLayers() {
+    return this.layers.size();
+  }
 
   @Override
-  public void saveAll(String desiredDir) {
-    IExport imgExporter;
-    IExport textExporter;
-    String imageInfo = "";
-    File f = new File("res/" + desiredDir);
-    if (f.exists()) {
-      f = new File(desiredDir + "1");
+  public IImage getImageAtLayer(int index) {
+    if (index < 0 || index >= getNumberOfLayers()) {
+      throw new IllegalArgumentException("Impossible layer num");
     }
-    f.mkdir();
-
-    for (int i = 0; i < this.layers.size(); i++) {
-      IImage currImg = this.layers.get(i).getImage();
-      if (currImg != null) {
-        String fileName = currImg.getFilename();
-        String[] splitFilename = fileName.split("\\.");
-        String fileType = splitFilename[1];
-
-        try {
-          switch (fileType) {
-            case "ppm":
-              imgExporter = new PPMExportFilename(currImg,
-                  "res/" + desiredDir + "/" + splitFilename[0]);
-              break;
-            case "jpeg":
-              imgExporter = new JPEGExport(currImg, "res/" + desiredDir + "/" + splitFilename[0]);
-              break;
-            case "png":
-              imgExporter = new PNGExport(currImg, "res/" + desiredDir + "/" + splitFilename[0]);
-              break;
-            default:
-              throw new IllegalArgumentException("Cannot save the layer with that file type.");
-          }
-          imgExporter.export();
-          imageInfo += i + ", " + "res/" + desiredDir + "/" + fileName + ", " + this.layers.get(i)
-              .isVisible() + "\n";
-        } catch (IOException e) {
-          throw new IllegalArgumentException("An error has occurred.");
-        }
-      }
+    IImage image = this.layers.get(index).getImage();
+    if (image != null) {
+      return image;
     }
-    textExporter = new TextFileExport(desiredDir, imageInfo);
-    try {
-      textExporter.export();
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Could not write to text file.");
+    return null;
+  }
+
+  @Override
+  public boolean getVisibilityAtLayer(int index) {
+    if (index < 0 || index >= getNumberOfLayers()) {
+      throw new IllegalArgumentException("Impossible layer num");
+    }
+    return this.layers.get(index).isVisible();
+  }
+
+  @Override
+  public void loadLayer(IImage image) {
+    if (image == null) {
+      throw new IllegalArgumentException("Image is null");
+    }
+    if (sameDimensions(image)) {
+      this.layers.get(currentLayerNum).setImage(image);
     }
   }
 
   @Override
-  public void loadLayer(String... filename) {
-    int iterateBy = filename.length;
-
-    if (filename.length > this.layers.size()) {
-      iterateBy = this.layers.size();
+  public void loadAll(List<ILayer> importedLayers) {
+    if (importedLayers == null) {
+      throw new IllegalArgumentException("Null layers.");
     }
-
-    for (int i = iterateBy - 1; i >= 0; i--) {
-      IOManager manager = this.determineCorrectManager(filename[i]);
-      IImage image = manager.apply();
-
-      if (this.sameDimensions(image)) {
-        if (this.currentLayerNum - i >= 0) {
-          this.layers.get(currentLayerNum - i).setImage(image);
-        } else {
-          this.layers.get(currentLayerNum + i).setImage(image);
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns the correct {@link IOManager} based on a given filename.
-   *
-   * @param filename the given filename
-   * @return the correct {@link IOManager} associated with the filename extension
-   * @throws IllegalArgumentException if no filename extension is found
-   */
-  private IOManager determineCorrectManager(String filename) throws IllegalArgumentException {
-    String[] splitFilename = filename.split("\\.");
-    String fileType = splitFilename[1];
-
-    switch (fileType) {
-      case "ppm":
-        return new InputFilenameManager(filename);
-      case "jpeg":
-        return new InputJPEGFilenameManager(filename);
-      case "png":
-        return new InputPNGFilenameManager(filename);
-      default:
-        throw new IllegalArgumentException("Cannot save the layer with that file type.");
-    }
-  }
-
-  @Override
-  public void loadAll(String filename) {
-    IOLayerManager manager = new InputTextFilenameManager(filename);
-
-    List<ILayer> importedLayers = manager.apply();
-
-    for (ILayer layer : importedLayers) {
-      this.layers.add(layer);
-    }
+    this.layers.addAll(importedLayers);
   }
 
   /**
    * Determines whether or not the given image has the same dimensions as the first image in the
    * list of layers. If there are no layers in the list of layers, return true.
    *
-   * @param image
+   * @param image the image to be checked if the dimensions are appropriate
    * @return true if the given image has the same dimensions as the first or if the image is the
    * first layer in the list of layers
    */
@@ -250,12 +140,18 @@ public class LayerModel implements ILayerModel {
   @Override
   public void makeLayerInvisible(String layerName) {
     int index = getIndexBasedOnName(layerName);
+    if (index == -1) {
+      throw new IllegalArgumentException("No such layer exists!");
+    }
     this.layers.get(index).setVisibility(false);
   }
 
   @Override
   public void makeLayerVisible(String layerName) {
     int index = getIndexBasedOnName(layerName);
+    if (index == -1) {
+      throw new IllegalArgumentException("No such layer exists!");
+    }
     this.layers.get(index).setVisibility(true);
   }
 
@@ -265,18 +161,45 @@ public class LayerModel implements ILayerModel {
       throw new IllegalArgumentException("Layer name cannot be null!");
     }
 
-    this.currentLayerNum = this.getIndexBasedOnName(layerName);
+    if (this.getIndexBasedOnName(layerName) != -1 && layers.get(this.getIndexBasedOnName(layerName))
+        .isVisible()) {
+      this.currentLayerNum = this.getIndexBasedOnName(layerName);
+    }
+  }
 
-    if (this.currentLayerNum == -1) {
-      throw new IllegalArgumentException("No such layer exists!");
+  /**
+   * Determines if the blur, gray, sepia, or sharpen can be applied to an image by checking if the
+   * current layer has an image and that the layer is visible.
+   *
+   * @return true if the current layer has an image and that it is visible.
+   */
+  private boolean canApplyOperation() {
+    return (this.currentLayerNum != -1 && this.layers.get(this.currentLayerNum).getImage() != null
+        && this.layers.get(this.currentLayerNum).isVisible());
+  }
+
+  @Override
+  public void filterCurrent(IFilter filter) {
+    if (filter == null) {
+      throw new IllegalArgumentException("Filter cannot be null!");
+    }
+
+    if (this.currentLayerNum != -1 && canApplyOperation()) {
+      IImage image = this.delegate.filter(this.layers.get(currentLayerNum).getImage(), filter);
+      this.layers.get(this.currentLayerNum).setImage(image);
     }
   }
 
   @Override
-  public void applyOperation(IPhotoOperations operation) {
-    if (this.layers.get(this.currentLayerNum).getImage() != null && this.layers
-        .get(this.currentLayerNum).isVisible()) {
-      IImage image = this.layers.get(this.currentLayerNum).applyOperation(operation);
+  public void colorTransformCurrent(IColorTransformation colorTransformation) {
+    if (colorTransformation == null) {
+      throw new IllegalArgumentException("Filter cannot be null!");
+    }
+
+    if (canApplyOperation()) {
+      IImage image = this.delegate
+          .colorTransformation(this.layers.get(currentLayerNum).getImage(),
+              colorTransformation);
       this.layers.get(this.currentLayerNum).setImage(image);
     }
   }
@@ -293,34 +216,68 @@ public class LayerModel implements ILayerModel {
         return i;
       }
     }
-
     return -1;
   }
 
   @Override
   public IImage filter(IImage image, IFilter filter) throws IllegalArgumentException {
-    return this.delegate.filter(this.layers.get(currentLayerNum).getImage(), filter);
+    if (image == null || filter == null) {
+      throw new IllegalArgumentException("Arguments are null");
+    }
+    // adds image to the list of layers
+    IImage i = this.delegate.filter(image, filter);
+    Layer layer = new Layer(i.getFilename());
+    layer.setImage(i);
+    this.layers.add(layer);
+
+    return i;
   }
 
   @Override
   public IImage colorTransformation(IImage image, IColorTransformation colorTransformation)
       throws IllegalArgumentException {
-    return this.delegate.colorTransformation(this.layers.get(this.layers.size() - 1).getImage(),
-        colorTransformation);
+    if (image == null || colorTransformation == null) {
+      throw new IllegalArgumentException("Arguments are null");
+    }
+    // adds image to the list of layers
+    IImage i = this.delegate.colorTransformation(image, colorTransformation);
+    Layer layer = new Layer(i.getFilename());
+    layer.setImage(i);
+    this.layers.add(layer);
+
+    return i;
   }
 
   @Override
   public IImage createImage(IImageCreator creator) throws IllegalArgumentException {
-    return this.delegate.createImage(creator);
+    if (creator == null) {
+      throw new IllegalArgumentException("Arguments are null");
+    }
+    // adds image to the list of layers
+    IImage image = this.delegate.createImage(creator);
+    Layer layer = new Layer(image.getFilename());
+    layer.setImage(image);
+    this.layers.add(layer);
+
+    return image;
   }
 
   @Override
-  public void exportImage(IExport export) throws IllegalArgumentException, IOException {
-    this.delegate.exportImage(export);
+  public String toString() {
+    StringBuilder newString = new StringBuilder();
+
+    for (int i = 0; i < this.layers.size(); i++) {
+      newString.append("Layer #").append(i + 1).append(", ").append(this.layers.get(i).toString())
+          .append("\n");
+    }
+
+    if (currentLayerNum == -1) {
+      return newString + "Number of valid layers created: " + this.getNumberOfLayers()
+          + "\nCurrent not yet set.\n";
+    } else {
+      return newString + "Number of valid layers created: " + this.getNumberOfLayers()
+          + "\nCurrent Layer: " + this.layers.get(currentLayerNum).toString() + "\n";
+    }
   }
 
-  @Override
-  public IImage importImage(IOManager input) throws IllegalArgumentException {
-    return this.delegate.importImage(input);
-  }
 }

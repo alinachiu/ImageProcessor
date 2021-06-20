@@ -2,7 +2,7 @@ package model.image;
 
 import java.util.Arrays;
 import java.util.Objects;
-import model.ImageUtil;
+import utils.ImageUtil;
 
 /**
  * Represents a PPM image that is of the PPM format (a simple, text-based file format to store
@@ -57,7 +57,7 @@ public class Image implements IImage {
    *
    * @param imageGrid the given 2D IPixel array
    * @return true if any of the pixels in the given 2D IPixel array are invalid, false if they are
-   *         all valid
+   * all valid
    */
   private boolean checkImageGrid(IPixel[][] imageGrid) throws IllegalArgumentException {
     for (int i = 0; i < imageGrid.length; i++) {

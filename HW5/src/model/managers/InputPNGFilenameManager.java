@@ -2,7 +2,7 @@ package model.managers;
 
 import java.io.File;
 import java.io.IOException;
-import model.AdditionalImageUtils;
+import utils.AdditionalImageUtils;
 import model.image.IImage;
 import model.image.IPixel;
 import model.image.Image;
