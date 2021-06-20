@@ -277,7 +277,16 @@ export.export();
 ```
 
 ## The JAR File
-If not already placed there, please run the JAR file from the root submission folder. The JAR file can be run using user input by following the commands in the USEME or using a given script.
+If not already placed there, please run the JAR file from the res folder. The JAR file can be run using user input by following the commands in the USEME or using a given script.
+
+The JAR file can be run in two ways using the command line/terminal as seen below:
+```Java
+// using a script
+java -jar HW6.jar script1.txt
+
+// using user input
+java -jar HW6.jar // then input commands as stated in USEME
+```
 
 ## Note about the ImageUtil and AdditionalImageUtil classes
 
