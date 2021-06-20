@@ -4,7 +4,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import controller.BlurCommand;
+import controller.ColorTransformOnImageCommand;
+import controller.CreateImageCommand;
 import controller.CreateImageLayerCommand;
+import controller.FilterOnImageCommand;
 import controller.GrayscaleCommand;
 import controller.IImageProcessingController;
 import controller.IPhotoCommands;
@@ -139,6 +142,26 @@ public class IPhotoCommandsTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
+  public void testNullFilenameForColorTransOnImgCommand() {
+    new ColorTransformOnImageCommand(null, "Grayscale");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullColorTransForColorTransOnImgCommand() {
+    new ColorTransformOnImageCommand("test", null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullModelsForColorTransOnImgCommand() {
+    new ColorTransformOnImageCommand("test", "grayscale").go(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullModelForCreateImageCommand() {
+    new CreateImageCommand(2, 2, 10, 12, 34, 43, 45, 43).go(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
   public void testCreateImageLayerWithNullName() {
     new CreateImageLayerCommand(null).go(model);
   }
@@ -153,6 +176,16 @@ public class IPhotoCommandsTest {
     new CreateImageLayerCommand("fourth").go(model);
     assertEquals(4, model.getLayers().size());
     assertTrue(model.getLayers().get(3).isVisible());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullColorTransForFilterOnImgCommand() {
+    new FilterOnImageCommand("test", null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullModelsForFilterOnImgCommand() {
+    new FilterOnImageCommand("test", "blur").go(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -176,8 +209,7 @@ public class IPhotoCommandsTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullModelLoadAllCommand() {
-    new LoadAllCommand("Tester").go(null);
-    new File("res/Tester").delete();
+    new LoadAllCommand("Tester1").go(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -187,8 +219,7 @@ public class IPhotoCommandsTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullModelLoadSingleCommand() {
-    new LoadAllCommand("Tester").go(null);
-    new File("res/Tester").delete();
+    new LoadAllCommand("Tester2").go(null);
   }
 
   @Test
@@ -201,8 +232,9 @@ public class IPhotoCommandsTest {
     load.go(model);
     assertArrayEquals(grid4,this.model.getLayers().get(3).getImage().getImage());
     assertEquals("fourthImg.png", this.model.getLayers().get(3).getImage().getFilename());
-    File file = new File("fourthImg.png");
-    file.delete();
+
+    File f = new File("fourthImg.png");
+    f.delete();
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -257,7 +289,7 @@ public class IPhotoCommandsTest {
     assertArrayEquals(grid2, this.model.getLayers().get(0).getImage().getImage());
     new RemoveImageLayerCommand("second").go(model);
     assertEquals(2, model.getLayers().size());
-    assertEquals(grid3, model.getLayers().get(1).getImage().getImage());
+    assertArrayEquals(grid3, model.getLayers().get(1).getImage().getImage());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -267,8 +299,10 @@ public class IPhotoCommandsTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullModelSaveAllCommand() {
-    new SaveAllCommand("Tester").go(null);
-    new File("res/Tester").delete();
+    SaveAllCommand saveAll = new SaveAllCommand("testing");
+    File f = new File("res/testing");
+    f.delete();
+    saveAll.go(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -278,8 +312,15 @@ public class IPhotoCommandsTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullModelSaveSingleCommand() {
+    new SaveSingleCommand("Tester4").go(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSaveSingleNoTopmostVisibleImage() {
+    model.createImageLayer("first");
+    model.loadLayer(new Image("res/puppy.ppm"));
+    model.makeLayerInvisible("first");
     new SaveSingleCommand("Tester").go(null);
-    new File("res/Tester").delete();
   }
 
   @Test
@@ -299,10 +340,11 @@ public class IPhotoCommandsTest {
     m.setCurrent("test");
     IPhotoCommands load2 = new LoadSingleCommand("fourthImg.png");
     load2.go(m);
-    File file = new File("fourthImg.png");
     assertArrayEquals(grid4,  model.getLayers().get(3).getImage().getImage());
     assertEquals("fourthImg.png",  model.getLayers().get(3).getImage().getFilename());
-    file.delete();
+
+    File f = new File("fourthImg.png");
+    f.delete();
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -448,18 +490,5 @@ public class IPhotoCommandsTest {
     controller.processImage();
     assertEquals("first\nfirst\n" + new Sepia().getClass().getSimpleName() + "\n",
         mockAppendable.toString());
-  }
-
-  @Test
-  public void testMockCreateAndCurrentAndLoadAndInvisible() throws IOException {
-    IExport export = new PNGExport(exImage, "tester");
-    export.export();
-    in = new StringReader("create first  current first   load tester.png  invisible first q");
-    controller = new SimpleIImageProcessingController(mockModel, in, out);
-    controller.processImage();
-    assertEquals("first\nfirst\ntester.png\nfirst\n",
-        mockAppendable.toString());
-    File file = new File("tester.png");
-    file.delete();
   }
 }

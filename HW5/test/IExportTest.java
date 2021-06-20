@@ -395,5 +395,6 @@ public class IExportTest {
     }
     File file = new File("testerLayerInfo.txt");
     file.delete();
+    f.delete();
   }
 }

@@ -2,7 +2,6 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import model.exports.IExport;
 import model.exports.JPEGExport;
@@ -24,7 +23,7 @@ public class SaveAllCommand implements IPhotoCommands {
 
   /**
    * Constructs a command that saves a multi-layered image along with a text file containing the
-   * necessary info to reloa it.
+   * necessary info to reload it.
    *
    * @param desiredDirName the desired name of the directory to save the layers.
    * @throws IllegalArgumentException if the given filename is null.
@@ -47,9 +46,9 @@ public class SaveAllCommand implements IPhotoCommands {
       throw new IllegalArgumentException("Model cannot be null");
     }
     IExport imgExporter;
-    String imageInfo = "";
+    StringBuilder imageInfo = new StringBuilder();
 
-    List<ILayer> layers = new ArrayList<>();
+    List<ILayer> layers = m.getLayers();
 
     for (int i = 0; i < layers.size(); i++) {
       IImage currImg = layers.get(i).getImage();
@@ -57,27 +56,29 @@ public class SaveAllCommand implements IPhotoCommands {
       if (currImg != null) {
         try {
           imgExporter = determineCorrectExporter(currImg);
-          if (imgExporter != null) {
-            imgExporter.export();
-            imageInfo +=
-                i + ", " + desiredDir + getOnlyNameForFile(currImg.getFilename()) + ", " + layers
-                    .get(i).isVisible()
-                    + "\n";
-          }
+          imgExporter.export();
+          imageInfo.append(i).append(", ").append(desiredDir)
+              .append(getOnlyNameForFile(currImg.getFilename())).append(", ").append(layers
+              .get(i).isVisible()).append("\n");
+
         } catch (IOException e) {
           throw new IllegalArgumentException("An error has occurred.");
         }
+      } else {
+        imageInfo.append(i).append(", ")
+            .append("noimage").append(", ").append(layers
+            .get(i).isVisible()).append("\n");
       }
     }
-    exportTextFile(desiredDir, imageInfo);
+    exportTextFile(desiredDir, imageInfo.toString());
   }
 
   /**
    * Exports a text file containing information about the layers including each layers
    * location/name, order, and visibility.
    *
-   * @param desiredDir
-   * @param imageInfo
+   * @param desiredDir the desired name for the directory the files will be saved in
+   * @param imageInfo  the information related to the desired image
    */
   private void exportTextFile(String desiredDir, String imageInfo) {
     IExport textExporter = new TextFileExport(desiredDir, imageInfo);
@@ -103,42 +104,43 @@ public class SaveAllCommand implements IPhotoCommands {
     String filename = getOnlyNameForFile(image.getFilename());
     String fileType = getFileType(image.getFilename());
 
-    if (filename != null) {
-      try {
-        switch (fileType) {
-          case "ppm":
-            return new PPMExportFilename(image, desiredDir + filename);
-          case "jpeg":
-            return new JPEGExport(image, desiredDir + filename);
-          case "png":
-            return new PNGExport(image, desiredDir + filename);
-          default:
-            throw new IllegalArgumentException("Cannot save the layer with that file type.");
-        }
-      } catch (IOException e) {
-        throw new IllegalArgumentException("An error has occurred.");
+    try {
+      switch (fileType) {
+        case "ppm":
+          return new PPMExportFilename(image, desiredDir + filename);
+        case "jpeg":
+          return new JPEGExport(image, desiredDir + filename);
+        case "png":
+          return new PNGExport(image, desiredDir + filename);
+        default:
+          throw new IllegalArgumentException("Cannot save the layer with that file type.");
       }
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "An error has occurred while attempting to read/write file.");
     }
-    return null;
   }
 
   /**
-   * Returns the filename from a full file name (aka the filename does not include the
-   * path or the extension).
+   * Returns the filename from a full file name (aka the filename does not include the path or the
+   * extension).
+   *
    * @param fullName the full name of a file (includes extension and path)
    * @return filename (no extension or path)
+   * @throws IllegalArgumentException if no such file exists
    */
   private String getOnlyNameForFile(String fullName) {
     int startFilename = fullName.lastIndexOf("/");
     int endFilename = fullName.indexOf(".");
     if (endFilename == -1) {
-      return null;
+      throw new IllegalArgumentException("No such file exists!");
     }
     return fullName.substring(startFilename + 1, endFilename);
   }
 
   /**
    * Returns the extension of a file.
+   *
    * @param fullName the full name of a file (including extension)
    * @return the extension of the file.
    */

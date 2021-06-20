@@ -56,6 +56,8 @@ public class ColorTransformOnImageCommand implements IPhotoCommands {
 
     if (c != null && image != null) {
       m.colorTransformation(image.apply(), c);
+    } else {
+      throw new IllegalArgumentException("Invalid color transformation and/or image filename.");
     }
   }
 

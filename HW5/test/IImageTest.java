@@ -32,7 +32,7 @@ public class IImageTest {
         {new Pixel(3, 0, 0, 0, 0), new Pixel(3, 1, 255, 0, 0),
             new Pixel(3, 2, 0, 0, 0), new Pixel(3, 3, 255, 0, 0)}};
     exPPM = new Image(exImg, "Checkerboard");
-    checkerboardPMM = new Image("res/Checkerboard.ppm");
+    checkerboardPMM = new Image("res/Checkerboard1.ppm");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -84,7 +84,7 @@ public class IImageTest {
 
   @Test
   public void getImageWithSingleConstructor() {
-    assertArrayEquals(new ImageUtil().readPPM("res/Checkerboard.ppm"), checkerboardPMM.getImage());
+    assertArrayEquals(new ImageUtil().readPPM("res/Checkerboard1.ppm"), checkerboardPMM.getImage());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class IImageTest {
 
   @Test
   public void getFilenameWithSingleConstructor() {
-    assertEquals("res/Checkerboard.ppm", checkerboardPMM.getFilename());
+    assertEquals("res/Checkerboard1.ppm", checkerboardPMM.getFilename());
   }
 
   @Test

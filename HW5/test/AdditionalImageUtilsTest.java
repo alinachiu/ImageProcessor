@@ -47,8 +47,8 @@ public class AdditionalImageUtilsTest {
 
   @Test
   public void testConvertFlowerJPEGImageFile() throws IOException {
-    BufferedImage image = ImageIO.read(new File("res/a/flower.jpeg"));
-    IPixel[][] grid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.jpeg"));
+    BufferedImage image = ImageIO.read(new File("res/correct/flower.jpeg"));
+    IPixel[][] grid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.jpeg"));
 
     for (int i = 0; i < image.getHeight(); i++) {
       for (int j = 0; j < image.getWidth(); j++) {
@@ -61,8 +61,8 @@ public class AdditionalImageUtilsTest {
 
   @Test
   public void testConvertFlowerPNGImageFile() throws IOException {
-    BufferedImage image = ImageIO.read(new File("res/a/flower.png"));
-    IPixel[][] grid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.png"));
+    BufferedImage image = ImageIO.read(new File("res/correct/flower.png"));
+    IPixel[][] grid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.png"));
 
     for (int i = 0; i < image.getHeight(); i++) {
       for (int j = 0; j < image.getWidth(); j++) {

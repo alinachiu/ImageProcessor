@@ -1,11 +1,9 @@
-import java.util.List;
 import model.image.IImage;
 import model.image.IPixel;
 import model.image.Image;
 import model.image.Pixel;
 import model.layer.ILayer;
 import model.layer.Layer;
-import model.managers.InputFilenameManager;
 import model.managers.InputJPEGFilenameManager;
 import model.managers.InputPNGFilenameManager;
 import org.junit.Before;
@@ -29,8 +27,8 @@ public class ILayerTest {
 
   @Before
   public void setUp() {
-    layer1 = new Layer("res/a/flower.jpeg");
-    layer1.setImage(new InputJPEGFilenameManager("res/a/flower.jpeg").apply());
+    layer1 = new Layer("res/correct/flower.jpeg");
+    layer1.setImage(new InputJPEGFilenameManager("res/correct/flower.jpeg").apply());
     exLayer = new Layer("first");
     exLayer2 = new Layer("second");
     grid = new IPixel[][]{
@@ -115,9 +113,9 @@ public class ILayerTest {
   @Test
   public void testToStringImageAssociated() {
     ILayer layer = new Layer("layer");
-    layer.setImage(new Image("res/checkerboard.ppm"));
+    layer.setImage(new Image("res/checkerboard1.ppm"));
 
-    assertEquals("Name of Layer: layer, Image Filename: res/checkerboard.ppm, "
+    assertEquals("Name of Layer: layer, Image Filename: res/checkerboard1.ppm, "
             + "Visibility: true",
         layer.toString());
   }
@@ -134,12 +132,12 @@ public class ILayerTest {
 
   @Test
   public void testEquals() {
-    ILayer layer2 = new Layer("res/a/flower.png");
-    layer2.setImage(new InputPNGFilenameManager("res/a/flower.png").apply());
-    ILayer layer3 = new Layer("res/a/flower.jpeg");
-    layer3.setImage(new InputJPEGFilenameManager("res/a/flower.jpeg").apply());
-    ILayer layer4 = new Layer("res/a/flower.jpeg");
-    layer4.setImage(new InputJPEGFilenameManager("res/a/flower.jpeg").apply());
+    ILayer layer2 = new Layer("res/correct/flower.png");
+    layer2.setImage(new InputPNGFilenameManager("res/correct/flower.png").apply());
+    ILayer layer3 = new Layer("res/correct/flower.jpeg");
+    layer3.setImage(new InputJPEGFilenameManager("res/correct/flower.jpeg").apply());
+    ILayer layer4 = new Layer("res/correct/flower.jpeg");
+    layer4.setImage(new InputJPEGFilenameManager("res/correct/flower.jpeg").apply());
     layer4.setVisibility(false);
 
     assertFalse(layer2.equals(layer1));
@@ -155,8 +153,8 @@ public class ILayerTest {
 
   @Test
   public void testHashcodeExtensional() {
-    ILayer layer1Copy = new Layer("res/a/flower.jpeg");
-    layer1Copy.setImage(new InputJPEGFilenameManager("res/a/flower.jpeg").apply());
+    ILayer layer1Copy = new Layer("res/correct/flower.jpeg");
+    layer1Copy.setImage(new InputJPEGFilenameManager("res/correct/flower.jpeg").apply());
 
     assertEquals(layer1Copy.hashCode(), layer1.hashCode());
   }

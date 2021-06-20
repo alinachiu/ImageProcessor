@@ -484,7 +484,6 @@ public class ILayerModelTest {
     model.createImageLayer("first");
     model.createImageLayer("second");
     model.createImageLayer("third");
-    String toStringCurrentFirst = model.toString();
 
     assertEquals(3, model.getLayers().size());
 
@@ -513,6 +512,31 @@ public class ILayerModelTest {
     assertEquals(2, model.getLayers().size());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testLoadAllImagesWithDifferentDimensions() {
+    assertEquals(0, model.getLayers().size());
+
+    ILayer first = new Layer("first");
+    ILayer second = new Layer("second");
+    first.setImage(new Image("res/puppy.ppm"));
+    second.setImage(new Image("res/check.ppm"));
+
+    model.loadAll(new ArrayList<>(Arrays.asList(first, second)));
+    assertEquals(2, model.getLayers().size());
+  }
+
+  @Test
+  public void testLoadAllImagesWithSomeNullImages() {
+    assertEquals(0, model.getLayers().size());
+
+    ILayer first = new Layer("first");
+    ILayer second = new Layer("second");
+    first.setImage(new Image("res/puppy.ppm"));
+
+    model.loadAll(new ArrayList<>(Arrays.asList(first, second)));
+    assertEquals(2, model.getLayers().size());
+  }
+
   @Test
   public void testGetLayersNoLayers() {
     assertEquals(0, model.getLayers().size());
@@ -524,10 +548,10 @@ public class ILayerModelTest {
     model.createImageLayer("first");
     model.createImageLayer("second");
     model.createImageLayer("third");
-    model.loadLayer(new Image("res/Checkerboard.ppm"));
+    model.loadLayer(new Image("res/Checkerboard1.ppm"));
 
     ILayer first = new Layer("first");
-    first.setImage(new Image("res/Checkerboard.ppm"));
+    first.setImage(new Image("res/Checkerboard1.ppm"));
 
     assertEquals(3, model.getLayers().size());
     assertEquals(

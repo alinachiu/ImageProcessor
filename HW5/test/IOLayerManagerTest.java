@@ -21,7 +21,7 @@ public class IOLayerManagerTest {
 
   @Before
   public void initData() {
-    this.manager = new InputTextFilenameManager("res/a/layerInfo.txt");
+    this.manager = new InputTextFilenameManager("res/correct/layerInfo.txt");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -38,21 +38,17 @@ public class IOLayerManagerTest {
   public void testApply() {
     List<ILayer> layers = this.manager.apply();
 
-    ILayer layer1 = new Layer("res/a/flower.jpeg");
-    layer1.setImage(new InputJPEGFilenameManager("res/a/flower.jpeg").apply());
-    ILayer layer2 = new Layer("res/a/flower.png");
-    layer2.setImage(new InputPNGFilenameManager("res/a/flower.png").apply());
-    ILayer layer3 = new Layer("res/a/Checkerboard.ppm");
-    layer3.setImage(new InputFilenameManager("res/a/Checkerboard.ppm").apply());
-    layer3.setVisibility(false);
+    ILayer layer1 = new Layer("res/correct/flower.jpeg");
+    layer1.setImage(new InputJPEGFilenameManager("res/correct/flower.jpeg").apply());
+    ILayer layer2 = new Layer("res/correct/flower.png");
+    layer2.setImage(new InputPNGFilenameManager("res/correct/flower.png").apply());
+    layer2.setVisibility(false);
 
     assertEquals(layers.size(), 3);
     assertTrue(layers.contains(layer1));
     assertTrue(layers.contains(layer2));
-    assertTrue(layers.contains(layer3));
     assertEquals(layers.get(0), layer1);
     assertEquals(layers.get(1), layer2);
-    assertEquals(layers.get(2), layer3);
   }
 
 }

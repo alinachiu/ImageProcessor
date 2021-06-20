@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -81,10 +82,18 @@ public class ImageUtil {
    */
   public static void main(String[] args) {
     Appendable out = System.out;
-    Readable in = new InputStreamReader(System.in);
-    IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
-        in, out);
+    if (args.length == 1) {
+      File in = new File(args[0]);
+      IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
+          in, out);
 
-    controller.processImage();
+      controller.processImage();
+    } else {
+      Readable in = new InputStreamReader(System.in);
+      IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
+          in, out);
+
+      controller.processImage();
+    }
   }
 }

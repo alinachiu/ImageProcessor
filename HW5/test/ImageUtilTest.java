@@ -33,6 +33,6 @@ public class ImageUtilTest {
   public void testReadPPM() {
     IImageCreator cb = new CheckboardImageCreator(4, 4);
     IPixel[][] board = cb.createImage().getImage();
-    assertArrayEquals(board, u.readPPM("res/Checkerboard.ppm"));
+    assertArrayEquals(board, u.readPPM("res/Checkerboard1.ppm"));
   }
 }

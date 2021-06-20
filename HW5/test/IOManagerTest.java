@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import model.creator.IImageCreator;
 import model.image.IImage;
 import model.image.IPixel;
 import model.image.Image;
-import model.image.Pixel;
 import model.managers.IOManager;
 import model.managers.InputFileManager;
 import model.managers.InputFilenameManager;
@@ -42,9 +40,9 @@ public class IOManagerTest {
   public void testValidFile() {
     IImageCreator board = new CheckboardImageCreator(4, 4);
     IImage checkerboard = board.createImage();
-    IOManager input = new InputFileManager(new File("res/Checkerboard.ppm"));
+    IOManager input = new InputFileManager(new File("res/Checkerboard1.ppm"));
     assertArrayEquals(checkerboard.getImage(), input.apply().getImage());
-    assertEquals("res/Checkerboard.ppm", input.apply().getFilename());
+    assertEquals("res/Checkerboard1.ppm", input.apply().getFilename());
   }
 
   // Tests for InputFilenameManager:
@@ -63,8 +61,8 @@ public class IOManagerTest {
   @Test
   public void testValidFilename() {
     IImageCreator board = new CheckboardImageCreator(4, 4);
-    IImage checkerboard = new Image(board.createImage().getImage(), "res/Checkerboard.ppm");
-    IOManager input = new InputFilenameManager("res/Checkerboard.ppm");
+    IImage checkerboard = new Image(board.createImage().getImage(), "res/Checkerboard1.ppm");
+    IOManager input = new InputFilenameManager("res/Checkerboard1.ppm");
     assertArrayEquals(checkerboard.getImage(), input.apply().getImage());
     assertEquals(checkerboard.getFilename(), input.apply().getFilename());
   }
@@ -83,18 +81,18 @@ public class IOManagerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testInputJPEGFileManagerFileWithNoExtension() {
-    IOManager manager = new InputJPEGFileManager(new File("res/a/flower"));
+    IOManager manager = new InputJPEGFileManager(new File("res/correct/flower"));
     IImage image = manager.apply();
   }
 
   @Test
   public void testInputJPEGFileManagerRealFile() throws IOException {
-    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.jpeg"));
-    IImage imageBasedOnGrid = new Image(imageGrid, "res/a/flower.jpeg");
-    IOManager manager = new InputJPEGFileManager(new File("res/a/flower.jpeg"));
+    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.jpeg"));
+    IImage imageBasedOnGrid = new Image(imageGrid, "res/correct/flower.jpeg");
+    IOManager manager = new InputJPEGFileManager(new File("res/correct/flower.jpeg"));
     IImage image = manager.apply();
 
-    assertEquals(image.getFilename(), "res/a/flower.jpeg");
+    assertEquals(image.getFilename(), "res/correct/flower.jpeg");
     assertEquals(image.getImage().length, 122);
     assertArrayEquals(image.getImage(), imageBasedOnGrid.getImage());
   }
@@ -113,18 +111,18 @@ public class IOManagerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testInputJPEGFilenameManagerFileWithNoExtension() {
-    IOManager manager = new InputJPEGFilenameManager("res/a/flower");
+    IOManager manager = new InputJPEGFilenameManager("res/correct/flower");
     IImage image = manager.apply();
   }
 
   @Test
   public void testInputJPEGFilenameManagerRealFile() throws IOException {
-    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.jpeg"));
-    IImage imageBasedOnGrid = new Image(imageGrid, "res/a/flower.jpeg");
-    IOManager manager = new InputJPEGFilenameManager("res/a/flower.jpeg");
+    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.jpeg"));
+    IImage imageBasedOnGrid = new Image(imageGrid, "res/correct/flower.jpeg");
+    IOManager manager = new InputJPEGFilenameManager("res/correct/flower.jpeg");
     IImage image = manager.apply();
 
-    assertEquals(image.getFilename(), "res/a/flower.jpeg");
+    assertEquals(image.getFilename(), "res/correct/flower.jpeg");
     assertEquals(image.getImage().length, 122);
     assertArrayEquals(image.getImage(), imageBasedOnGrid.getImage());
   }
@@ -143,18 +141,18 @@ public class IOManagerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testInputPNGFileManagerFileWithNoExtension() {
-    IOManager manager = new InputPNGFileManager(new File("res/a/flower"));
+    IOManager manager = new InputPNGFileManager(new File("res/correct/flower"));
     IImage image = manager.apply();
   }
 
   @Test
   public void testInputPNGFileManagerRealFile() throws IOException {
-    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.png"));
-    IImage imageBasedOnGrid = new Image(imageGrid, "res/a/flower.png");
-    IOManager manager = new InputPNGFileManager(new File("res/a/flower.png"));
+    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.png"));
+    IImage imageBasedOnGrid = new Image(imageGrid, "res/correct/flower.png");
+    IOManager manager = new InputPNGFileManager(new File("res/correct/flower.png"));
     IImage image = manager.apply();
 
-    assertEquals(image.getFilename(), "res/a/flower.png");
+    assertEquals(image.getFilename(), "res/correct/flower.png");
     assertEquals(image.getImage().length, 122);
     assertArrayEquals(image.getImage(), imageBasedOnGrid.getImage());
   }
@@ -173,18 +171,18 @@ public class IOManagerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testInputPNGFilenameManagerFileWithNoExtension() {
-    IOManager manager = new InputPNGFilenameManager("res/a/flower");
+    IOManager manager = new InputPNGFilenameManager("res/correct/flower");
     IImage image = manager.apply();
   }
 
   @Test
   public void testInputPNGFilenameManagerRealFile() throws IOException {
-    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/a/flower.png"));
-    IImage imageBasedOnGrid = new Image(imageGrid, "res/a/flower.png");
-    IOManager manager = new InputPNGFilenameManager("res/a/flower.png");
+    IPixel[][] imageGrid = AdditionalImageUtils.readPNGJPEG(new File("res/correct/flower.png"));
+    IImage imageBasedOnGrid = new Image(imageGrid, "res/correct/flower.png");
+    IOManager manager = new InputPNGFilenameManager("res/correct/flower.png");
     IImage image = manager.apply();
 
-    assertEquals(image.getFilename(), "res/a/flower.png");
+    assertEquals(image.getFilename(), "res/correct/flower.png");
     assertEquals(image.getImage().length, 122);
     assertArrayEquals(image.getImage(), imageBasedOnGrid.getImage());
   }

@@ -50,7 +50,8 @@ public class SaveSingleCommand implements IPhotoCommands {
    * Finds the topmost visible image when given a list of layers in a model.
    *
    * @param layers the given list of layers to sort through
-   * @return the topmost visible image in a given list of layers, null if no such image exists
+   * @return the topmost visible image in a given list of layers
+   * @throws IllegalArgumentException if no topmost visible layer exists
    */
   private IImage getTopmostVisibleImage(List<ILayer> layers) {
     for (int i = layers.size() - 1; i >= 0; i--) {
@@ -58,7 +59,7 @@ public class SaveSingleCommand implements IPhotoCommands {
         return layers.get(i).getImage();
       }
     }
-    return null;
+    throw new IllegalArgumentException("No topmost visible layer exists!");
   }
 
   /**
@@ -74,6 +75,11 @@ public class SaveSingleCommand implements IPhotoCommands {
       throw new IllegalArgumentException("Image is null.");
     }
     String[] splitFilename = image.getFilename().split("\\.");
+
+    if (splitFilename.length == 1) {
+      throw new IllegalArgumentException("Invalid filename");
+    }
+
     String fileType = splitFilename[1];
 
     try {

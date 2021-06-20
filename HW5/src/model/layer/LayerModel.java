@@ -9,16 +9,6 @@ import model.creator.IImageCreator;
 import model.filter.IFilter;
 import model.image.IImage;
 
-// TODO write USEME/tests, two examples of script file JAR file, updated class diagram, updated README
-
-// TODO split tests:
-//  - Alina: Controller,
-//    UML, update README, USEME, test to see if JAR file works, one example of script files add where to put JAR file in README
-//  - Jessica: IPhotoOperations (abstract), Exports (all), Layer class, LayerModel (saveLayer,
-//    saveAll, makeLayerInvisible/visible), mocks, view, change PNG and JPEG export to
-//    AdditionalImageUtils, abstract out save + saveAll, ask TA about backwards compatibility
-//    in controller
-
 /**
  * Represents a group of layers of {@code IImage} that can add/remove images from the group of
  * layers and apply
@@ -103,10 +93,12 @@ public class LayerModel implements ILayerModel {
       throw new IllegalArgumentException("Null layers.");
     }
 
-    for (int i = 0; i < importedLayers.size(); i++) {
+    for (ILayer importedLayer : importedLayers) {
       // adds images if they are all the same dimension
-      if (this.sameDimensions(importedLayers.get(i).getImage())) {
-        this.layers.add(importedLayers.get(i));
+      if (importedLayer.getImage() == null ) {
+        this.layers.add(importedLayer);
+      } else if (this.sameDimensions(importedLayer.getImage())) {
+        this.layers.add(importedLayer);
       } else {
         throw new IllegalArgumentException("Image(s) are not the same dimension!");
       }
@@ -135,23 +127,20 @@ public class LayerModel implements ILayerModel {
         return (firstImageWidth == image.getWidth()) && (firstImageHeight == image.getHeight());
       }
 
-      for (int i = 0; i < layers.size(); i++) {
-        if (layers.get(i).getImage() == null) {
-          return true;
-        }
-        int height1 = layers.get(i).getImage().getHeight();
-        int width1 = layers.get(i).getImage().getHeight();
-        int height2 = image.getHeight();
-        int width2 = image.getHeight();
+      for (ILayer layer : layers) {
+        if (layer.getImage() != null) {
+          int height1 = layer.getImage().getHeight();
+          int width1 = layer.getImage().getHeight();
+          int height2 = image.getHeight();
+          int width2 = image.getHeight();
 
-        if ((height1 != height2) || (width1 != width2)) {
-          return false;
+          if ((height1 != height2) || (width1 != width2)) {
+            return false;
+          }
         }
       }
-      return true;
-    } else {
-      return true;
     }
+    return true;
   }
 
   @Override
@@ -300,11 +289,11 @@ public class LayerModel implements ILayerModel {
   public List<ILayer> getLayers() {
     List<ILayer> newList = new ArrayList<>();
 
-    for (int i = 0; i < layers.size(); i++) {
-      ILayer layer = new Layer(layers.get(i).getName());
-      layer.setVisibility(layers.get(i).isVisible());
-      if (layers.get(i).getImage() != null) {
-        layer.setImage(layers.get(i).getImage());
+    for (ILayer iLayer : layers) {
+      ILayer layer = new Layer(iLayer.getName());
+      layer.setVisibility(iLayer.isVisible());
+      if (iLayer.getImage() != null) {
+        layer.setImage(iLayer.getImage());
       }
 
       newList.add(layer);

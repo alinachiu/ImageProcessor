@@ -48,7 +48,9 @@ public class InputTextFilenameManager implements IOLayerManager {
       }
 
       ILayer layer = new Layer(tokens[1]);
-      layer.setImage(determineCorrectManager(tokens[1]).apply());
+      if (!tokens[1].equalsIgnoreCase("noimage")) {
+        layer.setImage(determineCorrectManager(tokens[1]).apply());
+      }
       layer.setVisibility(Boolean.parseBoolean(tokens[2]));
       layers.add(layer);
     }

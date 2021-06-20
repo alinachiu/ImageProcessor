@@ -53,6 +53,8 @@ public class FilterOnImageCommand implements IPhotoCommands {
 
     if (f != null && image != null) {
       m.filter(image.apply(), f);
+    } else {
+      throw new IllegalArgumentException("Invalid color transformation and/or image filename.");
     }
   }
 

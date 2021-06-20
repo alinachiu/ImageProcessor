@@ -12,7 +12,8 @@ public interface IPhotoCommands {
    * Uses the given model to perform the class' command as a way of communicating to the model.
    *
    * @param m the model of the image-processing multi-layered model
-   * @throws IllegalArgumentException if the given model is null
+   * @throws IllegalArgumentException if the given model is null or if any parameters produce
+   *                                  invalid results (i.e. invalid filename)
    */
   void go(ILayerModel m) throws IllegalArgumentException;
 
