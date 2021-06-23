@@ -12,8 +12,9 @@ import model.image.IPixel;
 import model.image.Pixel;
 import model.layer.ILayerModel;
 import model.layer.LayerModel;
-import view.GraphicalImageProcessingView;
+import view.IGUIView;
 import view.IImageProcessingView;
+import view.MyWindow;
 
 /**
  * This class contains utility methods to read a PPM image from file and simply print its contents.
@@ -101,8 +102,7 @@ public class ImageUtil {
 //     }
 
     ILayerModel model = new LayerModel();
-    IImageProcessingView view = new GraphicalImageProcessingView();
-
+    IGUIView view = new MyWindow(model);
 
     IImageProcessingController controller = new GraphicalImageProcessingController(model, view);
     controller.processImage();

@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 /**
  * This class contains utility methods to help get the known controller commands of an
- * IImageProcessingController which includes additional commands associated with the extra credit.
+ * IImageProcessingController.
  */
 public class AdditionalControllerUtils {
 
@@ -70,8 +70,7 @@ public class AdditionalControllerUtils {
         .putIfAbsent("mosaic", scanner -> new FilterOnImageCommand(scanner.next(), scanner.next()));
     knownCommands
         .putIfAbsent("downscale", scanner -> new FilterOnImageCommand(scanner.next(), scanner.next()));
-    knownCommands
-        .putIfAbsent("filter", scanner -> new FilterOnImageCommand(scanner.next(), scanner.next()));
+
 
     return knownCommands;
   }
