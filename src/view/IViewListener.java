@@ -2,16 +2,22 @@ package view;
 
 // TODO javadocs
 public interface IViewListener {
-  void handleSaveEvent();
   void handleLoadEvent();
-  void makeCurrentEvent();
-  void colorTransformCurrentEvent();
-  void filterCurrentEvent();
-  void createLayerEvent();
-  void removeLayerEvent();
-  void loadLayerEvent();
-  void loadScriptEvent();
-  void saveTopmostVisibleLayerEvent();
-  void saveAllEvent();
-  void makeLayerInvisibleEvent();
+  void handleMakeCurrentEvent();
+  void handleSepiaEvent();
+  void handleGrayscaleEvent();
+  void handleBlurEvent();
+  void handleSharpenEvent();
+  void handleCreateLayerEvent();
+  void handleRemoveLayerEvent();
+  void handleLoadLayerEvent();
+  void handleLoadAllEvent();
+  void handleLoadScriptEvent();
+  void handleSaveTopmostVisibleLayerEvent();
+  void handleSaveAllEvent();
+  void handleMakeLayerInvisibleEvent();
+  void handleMakeLayerVisibleEvent();
+  void handleDownscaleEvent();
+  void handleMosaicEvent();
+  void handleCheckerboardEvent();
 }

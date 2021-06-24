@@ -99,6 +99,14 @@ public interface ILayerModel extends IModel {
    */
   List<ILayer> getLayers();
 
+  /**
+   * Returns the current layer, if one exists.
+   *
+   * @returns the current layer
+   * @throws IllegalArgumentException if the current layer does not exist
+   */
+  ILayer getCurrentLayer() throws IllegalArgumentException;
+
 }
 
 

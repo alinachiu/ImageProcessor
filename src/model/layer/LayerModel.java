@@ -303,6 +303,15 @@ public class LayerModel implements ILayerModel {
   }
 
   @Override
+  public ILayer getCurrentLayer() throws IllegalArgumentException {
+    if (currentLayerNum < 0 || currentLayerNum > layers.size() - 1) {
+      throw new IllegalArgumentException("There is no current layer!");
+    }
+
+    return this.layers.get(currentLayerNum);
+  }
+
+  @Override
   public String toString() {
     StringBuilder newString = new StringBuilder();
 

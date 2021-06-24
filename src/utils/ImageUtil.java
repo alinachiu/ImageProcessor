@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 import controller.IImageProcessingController;
 import controller.SimpleIImageProcessingController;
+import model.ILayerModelState;
+import model.LayerModelState;
 import model.image.IPixel;
 import model.image.Pixel;
 import model.layer.ILayerModel;
@@ -86,23 +88,63 @@ public class ImageUtil {
    * @param args the string argument
    */
   public static void main(String[] args) {
-//     Appendable out = System.out;
-//     if (args.length == 1) {
-//       File in = new File(args[0]);
-//       IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
-//           in, out);
+//    Appendable out = System.out;
+//    switch (args.length) {
+//      case 2:
+//        if (args[0].equalsIgnoreCase("-script")) {
+//          File in = new File(args[1]);
+//          IImageProcessingController controller = new SimpleIImageProcessingController(
+//              new LayerModel(),
+//              in, out);
 //
-//       controller.processImage();
-//     } else {
-//       Readable in = new InputStreamReader(System.in);
-//       IImageProcessingController controller = new SimpleIImageProcessingController(new LayerModel(),
-//           in, out);
+//          controller.processImage();
+//        } else {
+//          // for invalid commands, display error message and quit
+//          System.out.println("Invalid command!");
+//          try {
+//            Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
+//          } catch (Exception e) {
+//            e.printStackTrace();
+//          }
+//        }
+//        break;
+//      case 1:
+//        if (args[0].equalsIgnoreCase("-text")) {
+//          File in = new File(args[1]);
+//          IImageProcessingController controller = new SimpleIImageProcessingController(
+//              new LayerModel(),
+//              in, out);
 //
-//       controller.processImage();
-//     }
+//          controller.processImage();
+//        } else if (args[0].equalsIgnoreCase("-interactive")) {
+//          ILayerModel model = new LayerModel();
+//          IImageProcessingController controller = new GraphicalImageProcessingController(
+//              model, new MyWindow(new LayerModelState(model)));
+//
+//          controller.processImage();
+//        } else {
+//          // for invalid commands, display error message and quit
+//          System.out.println("Invalid command!");
+//          try {
+//            Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
+//          } catch (Exception e) {
+//            e.printStackTrace();
+//          }
+//        }
+//        break;
+//      default:
+//        // for invalid commands, display error message and quit
+//        System.out.println("Invalid command!");
+//        try {
+//          Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
+//        } catch (Exception e) {
+//          e.printStackTrace();
+//        }
+//        break;
+//    }
 
     ILayerModel model = new LayerModel();
-    IGUIView view = new MyWindow(model);
+    IGUIView view = new MyWindow(new LayerModelState(model));
 
     IImageProcessingController controller = new GraphicalImageProcessingController(model, view);
     controller.processImage();

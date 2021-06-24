@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
+import model.LayerModelState;
 import model.layer.ILayerModel;
 import utils.ControllerUtils;
 import view.SimpleIImageProcessingView;
@@ -39,7 +40,7 @@ public class SimpleIImageProcessingController implements IImageProcessingControl
 
     this.model = model;
     this.rd = rd;
-    this.view = new SimpleIImageProcessingView(this.model, ap);
+    this.view = new SimpleIImageProcessingView(new LayerModelState(this.model), ap);
   }
 
   /**
@@ -58,7 +59,7 @@ public class SimpleIImageProcessingController implements IImageProcessingControl
     }
 
     this.model = model;
-    this.view = new SimpleIImageProcessingView(this.model, ap);
+    this.view = new SimpleIImageProcessingView(new LayerModelState(this.model), ap);
     try {
       this.rd = new FileReader(file);
     } catch (FileNotFoundException e) {

@@ -1,6 +1,7 @@
 package view;
 
 import java.io.IOException;
+import model.ILayerModelState;
 import model.IModel;
 
 /**
@@ -10,7 +11,7 @@ import model.IModel;
  */
 public class SimpleIImageProcessingView implements IImageProcessingView {
 
-  private final IModel model;
+  private final ILayerModelState model;
 
   private final Appendable out;
 
@@ -21,7 +22,7 @@ public class SimpleIImageProcessingView implements IImageProcessingView {
    * @param model The model for image processing
    * @throws IllegalArgumentException if the given model is null
    */
-  public SimpleIImageProcessingView(IModel model) {
+  public SimpleIImageProcessingView(ILayerModelState model) {
     if (model == null) {
       throw new IllegalArgumentException("Model cannot be null");
     }
@@ -38,7 +39,7 @@ public class SimpleIImageProcessingView implements IImageProcessingView {
    * @param ap    The appendable that outputs/communicates to the controller of the game.
    * @throws IllegalArgumentException if the given model or appendable is null
    */
-  public SimpleIImageProcessingView(IModel model, Appendable ap) {
+  public SimpleIImageProcessingView(ILayerModelState model, Appendable ap) {
     if (model == null || ap == null) {
       throw new IllegalArgumentException("Model cannot be null");
     }
@@ -54,7 +55,30 @@ public class SimpleIImageProcessingView implements IImageProcessingView {
 
   @Override
   public void renderLayerState() throws IOException {
-    out.append(this.model.toString());
+    out.append(this.createLayerState());
+  }
+
+  /**
+   * Creates the layer state based on the model state field.
+   *
+   * @return the string associated with the current layer state.
+   */
+  private String createLayerState() {
+    StringBuilder newString = new StringBuilder();
+
+    for (int i = 0; i < this.model.getNumLayers(); i++) {
+      newString.append("Layer #").append(i + 1).append(", ")
+          .append(this.model.getLayer(i).toString())
+          .append("\n");
+    }
+
+    try {
+      return newString + "Number of valid layers created: " + this.model.getNumLayers()
+          + "\nCurrent Layer: " + this.model.getCurrentLayer().toString() + "\n";
+    } catch (IllegalArgumentException e) {
+      return newString + "Number of valid layers created: " + this.model.getNumLayers()
+          + "\nCurrent not yet set.\n";
+    }
   }
 
 }

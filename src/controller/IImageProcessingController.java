@@ -18,4 +18,6 @@ public interface IImageProcessingController {
    * @throws IllegalArgumentException if the given file is malformed
    */
   void processImage() throws IllegalArgumentException;
+
+
 }
