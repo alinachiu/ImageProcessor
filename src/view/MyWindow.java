@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,37 +30,41 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import model.ILayerModelState;
-import model.layer.ILayerModel;
+import model.image.IImage;
+import model.image.Image;
+import model.layer.ILayer;
 
-// TODO mouse right click for invisible/visible, controller???, pop up error messages
+// TODO pop up error messages
 
 /**
  * Represents the window that displays the graphical representation of the image processing
  * program.
  */
-public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseListener {
+public class MyWindow extends JFrame implements IGUIView, ActionListener {
 
-  // Saving/Loading
+  //Saving/Loading Buttons
+  private final JButton loadButton;
+  //   private final JButton loadAllButton;
+  private final JButton saveButton;
+  private final JButton saveAllButton;
+  private final JButton loadScriptButton;
+
+  // Saving/Loading Menu
   private final JMenuItem loadMenuItem;
-  private final JMenuItem loadAllMenuItem;
+  //   private final JMenuItem loadAllMenuItem;
   private final JMenuItem saveMenuItem;
   private final JMenuItem saveAllMenuItem;
   private final JMenuItem loadScriptMenuItem;
 
-  // Layer Functions
-  private final JTextField layerNameField;
-  private final JButton createLayerButton;
-  private final JButton removeLayerButton;
-  private final JButton makeInvisibleButton;
-  private final JButton makeVisibleButton;
-
-  // Image Operations
+  // Image Operations Buttons
   private final JButton blurButton;
   private final JButton sharpenButton;
   private final JButton grayscaleButton;
@@ -68,27 +73,52 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
   private final JButton mosaicButton;
   private final JTextField numSeedsField;
 
+  // Image Operations Menu
+  private final JMenuItem blurMenuItem;
+  private final JMenuItem sharpenMenuItem;
+  private final JMenuItem grayscaleMenuItem;
+  private final JMenuItem sepiaMenuItem;
+  private final JMenuItem downscaleMenuItem;
+  private final JMenuItem mosaicMenuItem;
+
+  // Layer Functions
+  private final JTextField layerNameField;
+  private final JButton createLayerButton;
+  private final JButton removeLayerButton;
+  private final JButton makeInvisibleButton;
+  private final JButton makeVisibleButton;
+
+  // Layer Menu
+  private final JMenuItem createLayerMenuItem;
+  private final JMenuItem removeLayerMenuItem;
+  private final JMenuItem makeInvisibleMenuItem;
+  private final JMenuItem makeVisibleMenuItem;
+
   // Checkerboard
   private final JTextField numTilesField;
   private final JButton numTilesSubmitButton;
   private final JTextField sizeTileField;
   private final JButton sizeTileSubmitButton;
   private final JButton color1Button;
+  private Color col1;
+  private Color col2;
   private final JButton color2Button;
   private final JButton buildCheckerboardButton;
   private final JLabel colorChooserDisplay1;
   private final JLabel colorChooserDisplay2;
 
-  private final List<JLabel> images;
-  private final ILayerModelState model;
+  // Checkerboard Menu
+  private final JMenuItem buildCheckerboardMenuItem;
+
   //Map to get the correct field text from a certain key --Keys: "seeds", "numTiles", "sizeTiles", "layerName"
   private final Map<String, JTextField> textFieldData;
   private final List<IViewListener> listeners;
+  private int numberOfLayers;
 
+  private final ILayerModelState model;
 
   public MyWindow(ILayerModelState model) {
     super();
-    this.images = new ArrayList<>();
     this.model = model;
     this.listeners = new ArrayList<>();
     textFieldData = new HashMap<String, JTextField>();
@@ -100,14 +130,16 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     JPanel topMostImagePanel = new JPanel();
     placeImagePanel(topMostImagePanel);
 
-    //Image Panel -- Shows the current layer
-    JPanel currentLayerPanel = new JPanel();
-    placeCurrentImgPanel(currentLayerPanel);
+    add(topMostImagePanel, BorderLayout.CENTER);
 
-    // Split Pane for Topmost visible layer Panel and Current Layer Panel
-    JSplitPane shownLayers = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topMostImagePanel,
-        currentLayerPanel);
-    add(shownLayers, BorderLayout.CENTER);
+    //Image Options Menu
+    blurMenuItem = new JMenuItem("Blur");
+    sharpenMenuItem = new JMenuItem("Sharpen");
+    sepiaMenuItem = new JMenuItem("Sepia");
+    grayscaleMenuItem = new JMenuItem("Grayscale");
+    mosaicMenuItem = new JMenuItem("Mosaic (Enter # Seeds)");
+    downscaleMenuItem = new JMenuItem("Downscale");
+    placeImgOptionsMenu();
 
     //Image Options Panel -- Blur, Sharpen, Gray, Sepia, Mosaic, and Downscale
     JPanel imgOptionsPanel = new JPanel();
@@ -121,19 +153,34 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     downscaleButton = new JButton("Downscale");
     placeImgOptionsPanel(imgOptionsPanel);
 
-    //Load and Save Panel -- Load, Load All, Save, Save All, and LoadScript
+    //Load and Save Menu
     loadMenuItem = new JMenuItem("Load");
-    loadAllMenuItem = new JMenuItem("Load All");
+//     loadAllMenuItem = new JMenuItem("Load All");
     saveMenuItem = new JMenuItem("Save");
     saveAllMenuItem = new JMenuItem("Save All");
     loadScriptMenuItem = new JMenuItem("Load Script");
-    placeSaveAndLoadComponents();
+    placeSaveAndLoadMenu();
+
+    //Load and Save Panel -- Load, Load All, Save, Save All, and LoadScript
+    JPanel loadAndSavePanel = new JPanel();
+    loadButton = new JButton("Load");
+//     loadAllButton = new JButton("Load All");
+    saveButton = new JButton("Save");
+    saveAllButton = new JButton("Save All");
+    loadScriptButton = new JButton("Load Script");
+    placeSaveAndLoadButtons(loadAndSavePanel);
 
     // Split Pane for Image Operations Panel and Load/Save Panel
-    JSplitPane splitOperAndLoadAndSave = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        imgOptionsPanel,
-        shownLayers);
+    JSplitPane splitOperAndLoadAndSave = new JSplitPane(SwingConstants.HORIZONTAL,
+        imgOptionsPanel, loadAndSavePanel);
     add(splitOperAndLoadAndSave, BorderLayout.WEST);
+
+    //Layer Menu
+    createLayerMenuItem = new JMenuItem("Create");
+    removeLayerMenuItem = new JMenuItem("Remove");
+    makeInvisibleMenuItem = new JMenuItem("Invisible");
+    makeVisibleMenuItem = new JMenuItem("Visible");
+    placeLayerMenuItem();
 
     //Layers Panel -- Shows Layers, Visibility Options, Create/Remove Layer
     JPanel layersPanel = new JPanel();
@@ -160,6 +207,10 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     colorChooserDisplay2 = new JLabel("      ");
     placeCheckerboardPanel(checkerboardPanel);
 
+    //Layer Menu
+    buildCheckerboardMenuItem = new JMenuItem("Build");
+    placeCheckerboardMenu();
+
     // Split Pane for Layers Panel and Checkerboard Panel
     JSplitPane splitLayerAndChecker = new JSplitPane(JSplitPane.VERTICAL_SPLIT, layersPanel,
         checkerboardPanel);
@@ -169,20 +220,55 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     //Build the File Menu.
     JMenuBar menuBar = new JMenuBar();
     // Menu
-    JMenu menu = new JMenu("Load/Save");
-    menu.setMnemonic(KeyEvent.VK_F);
+    JMenu imageOperMenu = new JMenu("Edit Image");
+    imageOperMenu.setMnemonic(KeyEvent.VK_F);
+    JMenu layerMenu = new JMenu("Edit Layer");
+    layerMenu.setMnemonic(KeyEvent.VK_F);
+    JMenu checkerboardMenu = new JMenu("Checkerboard");
+    checkerboardMenu.setMnemonic(KeyEvent.VK_F);
+    JMenu loadSaveMenu = new JMenu("Load/Save");
+    loadSaveMenu.setMnemonic(KeyEvent.VK_F);
     // create menu item and add it to the menu
     loadMenuItem.setMnemonic(KeyEvent.VK_F);
-    menu.add(loadMenuItem);
-    loadAllMenuItem.setMnemonic(KeyEvent.VK_F);
-    menu.add(loadAllMenuItem);
+    loadSaveMenu.add(loadMenuItem);
+//     loadAllMenuItem.setMnemonic(KeyEvent.VK_F);
+//     loadSaveMenu.add(loadAllMenuItem);
     saveMenuItem.setMnemonic(KeyEvent.VK_F);
-    menu.add(saveMenuItem);
+    loadSaveMenu.add(saveMenuItem);
     saveAllMenuItem.setMnemonic(KeyEvent.VK_F);
-    menu.add(saveAllMenuItem);
+    loadSaveMenu.add(saveAllMenuItem);
     loadScriptMenuItem.setMnemonic(KeyEvent.VK_F);
-    menu.add(loadScriptMenuItem);
-    menuBar.add(menu);
+    loadSaveMenu.add(loadScriptMenuItem);
+
+    blurMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(blurMenuItem);
+    sharpenMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(sharpenMenuItem);
+    sepiaMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(sepiaMenuItem);
+    grayscaleMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(grayscaleMenuItem);
+    downscaleMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(downscaleMenuItem);
+    mosaicMenuItem.setMnemonic(KeyEvent.VK_F);
+    imageOperMenu.add(mosaicMenuItem);
+
+    createLayerMenuItem.setMnemonic(KeyEvent.VK_F);
+    layerMenu.add(createLayerMenuItem);
+    removeLayerMenuItem.setMnemonic(KeyEvent.VK_F);
+    layerMenu.add(removeLayerMenuItem);
+    makeInvisibleMenuItem.setMnemonic(KeyEvent.VK_F);
+    layerMenu.add(makeInvisibleMenuItem);
+    makeVisibleMenuItem.setMnemonic(KeyEvent.VK_F);
+    layerMenu.add(makeVisibleMenuItem);
+
+    buildCheckerboardMenuItem.setMnemonic(KeyEvent.VK_F);
+    checkerboardMenu.add(buildCheckerboardMenuItem);
+
+    menuBar.add(imageOperMenu);
+    menuBar.add(layerMenu);
+    menuBar.add(checkerboardMenu);
+    menuBar.add(loadSaveMenu);
 
     this.setJMenuBar(menuBar);
 
@@ -191,6 +277,21 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
 
+  }
+
+  private void placeImgOptionsMenu() {
+    blurMenuItem.setActionCommand("blur");
+    blurMenuItem.addActionListener(this);
+    grayscaleMenuItem.setActionCommand("grayscale");
+    grayscaleMenuItem.addActionListener(this);
+    sepiaMenuItem.setActionCommand("sepia");
+    sepiaMenuItem.addActionListener(this);
+    sharpenMenuItem.setActionCommand("sharpen");
+    sharpenMenuItem.addActionListener(this);
+    mosaicMenuItem.setActionCommand("mosaicMenu");
+    mosaicMenuItem.addActionListener(this);
+    downscaleMenuItem.setActionCommand("downscale");
+    downscaleMenuItem.addActionListener(this);
   }
 
   //Upper-Left --> Operations that can be done on a current layer image (blur, sepia, etc)
@@ -235,12 +336,39 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     panel.add(mosaicPanel);
   }
 
-  //Menu Item --> Save and Loading Componenets (SaveAll, LoadAll, load script, etc)
-  private void placeSaveAndLoadComponents() {
+
+  private void placeSaveAndLoadButtons(JPanel panel) {
+    panel.setBorder(BorderFactory.createTitledBorder("Load/Save"));
+    panel.setBackground(new Color(198, 229, 234));
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    loadButton.setActionCommand("load");
+    loadButton.addActionListener(this);
+    loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(loadButton);
+//     loadAllButton.setActionCommand("loadAll");
+//     loadAllButton.addActionListener(this);
+//     loadAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//     panel.add(loadAllButton);
+    saveButton.setActionCommand("save");
+    saveButton.addActionListener(this);
+    saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(saveButton);
+    saveAllButton.setActionCommand("saveAll");
+    saveAllButton.addActionListener(this);
+    saveAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(saveAllButton);
+    loadScriptButton.setActionCommand("loadScript");
+    loadScriptButton.addActionListener(this);
+    loadScriptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(loadScriptButton);
+  }
+
+  //Menu Item --> Save and Loading Components (SaveAll, LoadAll, load script, etc)
+  private void placeSaveAndLoadMenu() {
     loadMenuItem.setActionCommand("load");
     loadMenuItem.addActionListener(this);
-    loadAllMenuItem.setActionCommand("loadAll");
-    loadAllMenuItem.addActionListener(this);
+//     loadAllMenuItem.setActionCommand("loadAll");
+//     loadAllMenuItem.addActionListener(this);
     saveMenuItem.setActionCommand("save");
     saveMenuItem.addActionListener(this);
     saveAllMenuItem.setActionCommand("saveAll");
@@ -249,31 +377,31 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     loadScriptMenuItem.addActionListener(this);
   }
 
-  //Top Center --> Places the Topmost visible layer at the top center
+  //Center --> Places the Topmost visible layer at the top center
   private void placeImagePanel(JPanel imagePanel) {
     JScrollPane scroller; // Makes this scrollable
     imagePanel.setBackground(new Color(142, 204, 213));
     imagePanel.setBorder(BorderFactory.createTitledBorder("Topmost Visible Layer"));
-    ImageIcon img = new ImageIcon("Jellyfish.jpg");
-    JLabel imageLabel = new JLabel(img);
-    scroller = new JScrollPane(imageLabel);
-    imageLabel.setIcon(img);
-    scroller.setPreferredSize(new Dimension(600, 300)); //Dimension for panel
-    imagePanel.add(scroller);
+    IImage image = model.getTopmostVisibleLayerImage();
+    if (image != null) {
+      ImageIcon img = new ImageIcon(image.getFilename());
+      JLabel imageLabel = new JLabel(img);
+      scroller = new JScrollPane(imageLabel);
+      imageLabel.setIcon(img);
+      scroller.setPreferredSize(new Dimension(600, 600)); //Dimension for panel
+      imagePanel.add(scroller);
+    }
   }
 
-  //Bottom Center --> Places the current layer at the bottom center
-  private void placeCurrentImgPanel(JPanel currentPanel) {
-    JScrollPane scroller; // Makes this scrollable
-    currentPanel.setBackground(new Color(198, 229, 234));
-    currentPanel.setBorder(BorderFactory.createTitledBorder("Current Layer"));
-    //The image to be placed
-    ImageIcon img = new ImageIcon("Jellyfish.jpg");
-    JLabel imageLabel = new JLabel(img);
-    scroller = new JScrollPane(imageLabel);
-    imageLabel.setIcon(img);
-    scroller.setPreferredSize(new Dimension(600, 300)); //Dimension for panel
-    currentPanel.add(scroller);
+  private void placeLayerMenuItem() {
+    createLayerMenuItem.setActionCommand("createLayerMenu");
+    createLayerMenuItem.addActionListener(this);
+    removeLayerMenuItem.setActionCommand("removeLayer");
+    removeLayerMenuItem.addActionListener(this);
+    makeInvisibleMenuItem.setActionCommand("invisible");
+    makeInvisibleMenuItem.addActionListener(this);
+    makeVisibleMenuItem.setActionCommand("visible");
+    makeVisibleMenuItem.addActionListener(this);
   }
 
   //Top-Right --> Layer functions (create, remove, visibility, and all layer buttons)
@@ -291,29 +419,34 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     createLayerP.add(createLayerButton);
     layersPanel.add(createLayerP);
 
-    //    for (int i=0; i < model.getLayers().size(); i++) { //pseudo --> change this to get from the controller
-    //      JButton layerButton = new JButton(model.getLayers().get(i).getName());
-    //      layerButton.setActionCommand(model.getLayers().get(i).getName());
-    //      layerButton.addActionListener(this);
-    //      layersP.add(layerButton);
-
     //Panel for the actual layers
     JPanel layersP = new JPanel();
     layersP.setBackground(new Color(142, 204, 213));
     layersP.setLayout(new BoxLayout(layersP, BoxLayout.Y_AXIS));
 
-    for (int i = 0; i < 6; i++) { //psuedo --> change this to get from the controller
-      JButton layerButton = new JButton("Layer " + (i + 1));
-      layerButton.setActionCommand("Layer " + i);
+    for (int i = 0; i < model.getNumLayers(); i++) {
+      JButton layerButton = new JButton(model.getLayer(i).getName());
+      layerButton.setActionCommand("layerButton");
       layerButton.addActionListener(this);
       layerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
       layersP.add(layerButton);
     }
+
     layersPanel.add(layersP);
 
     JPanel currLayerFunctionsP = new JPanel();
     currLayerFunctionsP.setBackground(new Color(198, 229, 234));
     currLayerFunctionsP.setLayout(new FlowLayout());
+
+    JLabel currentLayerText = new JLabel();
+    ILayer currLayer = model.getCurrentLayer();
+    if (currLayer != null) {
+      currentLayerText.setText("Current Layer: " + model.getCurrentLayer().getName());
+      layersPanel.add(Box.createVerticalStrut(10));
+      currentLayerText.setAlignmentX(Component.CENTER_ALIGNMENT);
+      layersPanel.add(currentLayerText);
+      layersPanel.add(Box.createVerticalStrut(10));
+    }
 
     //Remove Layer
     removeLayerButton.setActionCommand("removeLayer");
@@ -329,6 +462,11 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     currLayerFunctionsP.add(makeVisibleButton);
 
     layersPanel.add(currLayerFunctionsP);
+  }
+
+  private void placeCheckerboardMenu() {
+    buildCheckerboardMenuItem.setActionCommand("buildBoard");
+    buildCheckerboardMenuItem.addActionListener(this);
   }
 
   //Bottom-Right --> Checkerboard Functions (numTitles, size of tiles, colors, build the board)
@@ -397,67 +535,71 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
 
   }
 
+  @Override
+  public void addViewEventListener(IViewListener listener) {
+    this.listeners.add(listener);
+  }
 
   @Override
   public void actionPerformed(ActionEvent e) {
     switch (e.getActionCommand()) {
       case "load":   // Allows user to load an image of the format jpeg, ppm, or png
-        final JFileChooser fchooser = new JFileChooser(".");
+        final JFileChooser fChooser = new JFileChooser(".");
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "JPEG/PNG/PPM Images", "jpeg", "ppm", "png");
-        fchooser.setFileFilter(filter);
-        int retvalue = fchooser.showOpenDialog(this);
-        if (retvalue == JFileChooser.APPROVE_OPTION) {
-          File f = fchooser.getSelectedFile();
+        fChooser.setFileFilter(filter);
+        int retValue = fChooser.showOpenDialog(this);
+        if (retValue == JFileChooser.APPROVE_OPTION) {
+          File f = fChooser.getSelectedFile();
+          this.emitLoadLayerEvent(f.getAbsolutePath());
         }
-        this.emitLoadEvent();
         break;
       case "save": // Allows user to save an image (with their given file name)
-        final JFileChooser fchooser1 = new JFileChooser(".");
-        int retvalue1 = fchooser1.showSaveDialog(this);
-        if (retvalue1 == JFileChooser.APPROVE_OPTION) {
-          File f = fchooser1.getSelectedFile();
+        final JFileChooser fChooser1 = new JFileChooser(".");
+        int retValue1 = fChooser1.showSaveDialog(this);
+        if (retValue1 == JFileChooser.APPROVE_OPTION) {
+          File f = fChooser1.getSelectedFile();
+          this.emitSaveTopmostVisibleLayerEvent();
         }
-        this.emitSaveTopmostVisibleLayerEvent();
         break;
-      case "loadAll": // Allows the user to load a folder/directory
-        final JFileChooser fchooser2 = new JFileChooser(".");
-        fchooser2.setFileFilter(new FolderFilter());
-        fchooser2.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int retvalue2 = fchooser2.showOpenDialog(this);
-        if (retvalue2 == JFileChooser.APPROVE_OPTION) {
-          File f = fchooser2.getSelectedFile();
-        }
-        this.emitLoadAllEvent();
-        break;
+//       case "loadAll": // Allows the user to load a folder/directory
+//         final JFileChooser fchooser2 = new JFileChooser(".");
+//         fchooser2.setFileFilter(new FolderFilter());
+//         fchooser2.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//         int retvalue2 = fchooser2.showOpenDialog(this);
+//         if (retvalue2 == JFileChooser.APPROVE_OPTION) {
+//           File f = fchooser2.getSelectedFile();
+//         }
+//         this.emitLoadAllEvent(f);
+//         break;
       case "saveAll":  // Allows the user to save into a folder or create a new folder to save into
-        final JFileChooser fchooser3 = new JFileChooser(".");
-        fchooser3.setFileFilter(new FolderFilter());
-        fchooser3.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int retvalue3 = fchooser3.showSaveDialog(this);
-        if (retvalue3 == JFileChooser.APPROVE_OPTION) {
-          File f = fchooser3.getSelectedFile();
+        final JFileChooser fChooser3 = new JFileChooser(".");
+        fChooser3.setFileFilter(new FolderFilter());
+        fChooser3.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int retValue3 = fChooser3.showSaveDialog(this);
+        if (retValue3 == JFileChooser.APPROVE_OPTION) {
+          File f = fChooser3.getSelectedFile();
+          this.emitSaveAllEvent(f.getAbsolutePath());
         }
-        this.emitSaveAllEvent();
         break;
       case "loadScript":  // Allows the user to load in a script that is a txt file
-        final JFileChooser fchooser4 = new JFileChooser(".");
+        final JFileChooser fChooser4 = new JFileChooser(".");
         FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
             "Text File", "txt");
-        fchooser4.setFileFilter(filter2);
-        int retvalue4 = fchooser4.showOpenDialog(this);
-        if (retvalue4 == JFileChooser.APPROVE_OPTION) {
-          File f = fchooser4.getSelectedFile();
+        fChooser4.setFileFilter(filter2);
+        int retValue4 = fChooser4.showOpenDialog(this);
+        if (retValue4 == JFileChooser.APPROVE_OPTION) {
+          File f = fChooser4.getSelectedFile();
+          this.emitLoadScriptEvent(f.getAbsolutePath());
         }
-        this.emitLoadScriptEvent();
         break;
       case "color1":
-        Color col1 = JColorChooser
+        col1 = JColorChooser
             .showDialog(this, "Choose a color", colorChooserDisplay1.getBackground());
         colorChooserDisplay1.setBackground(col1);
         break;
       case "color2":
-        Color col2 = JColorChooser
+        col2 = JColorChooser
             .showDialog(this, "Choose a color", colorChooserDisplay2.getBackground());
         colorChooserDisplay2.setBackground(col2);
         break;
@@ -474,13 +616,26 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
         this.emitSepiaEvent();
         break;
       case "downscale":
-        this.emitDownscaleEvent();
+        this.emitDownscaleEvent(new Image("no image"));    // TODO change later
         break;
       case "mosaic":
-        this.emitMosaicEvent();
+        this.emitMosaicEvent(1);     // TODO change this later
         break;
+      case "mosaicMenu":
+        String seeds = JOptionPane.showInputDialog(this,
+            "Number of Seeds:", null);
+        if (seeds != null) {
+          numSeedsField.setText(seeds); // Set the seeds field to input
+          this.emitMosaicEvent(Integer.parseInt(numSeedsField.getText()));
+        }
       case "buildBoard":
-        this.emitCheckerboardEvent();
+        if (col1 != null && col2 != null) {
+          this.emitCheckerboardEvent(Integer.parseInt(sizeTileField.getText()),
+              Integer.parseInt(numTilesField.getText()), col1.getRed(), col1.getGreen(),
+              col1.getBlue(), col2.getRed(), col2.getGreen(), col2.getBlue());
+        }
+        this.emitCheckerboardDefaultColorEvent(Integer.parseInt(sizeTileField.getText()),
+            Integer.parseInt(numTilesField.getText()));
         break;
       case "visible":
         this.emitMakeLayerVisibleEvent();
@@ -488,14 +643,24 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
       case "invisible":
         this.emitMakeLayerInvisibleEvent();
         break;
-      case "remove":
+      case "removeLayer":
         this.emitRemoveLayerEvent();
         break;
-      case "create":
-        this.emitCreateLayerEvent();
+      case "createLayer":
+        this.emitCreateLayerEvent(layerNameField.getText());
         break;
-      case "current":
-        this.emitMakeCurrentEvent();
+      case "createLayerMenu":
+        String layerName = JOptionPane.showInputDialog(this,
+            "Name for Layer:", null);
+        if (layerName != null) {
+          layerNameField.setText(layerName); // Set the layer name field to input
+          this.emitCreateLayerEvent(layerNameField.getText());
+        }
+        break;
+      case "layerButton":
+        JButton button = (JButton) e.getSource();
+        String buttonName = button.getName();
+        this.emitMakeCurrentEvent(buttonName);
         break;
     }
   }
@@ -532,37 +697,6 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     throw new IllegalArgumentException("Key doesn't exist");
   }
 
-
-  @Override
-  public void mouseClicked(MouseEvent e) {
-
-  }
-
-  @Override
-  public void mousePressed(MouseEvent e) {
-
-  }
-
-  @Override
-  public void mouseReleased(MouseEvent e) {
-
-  }
-
-  @Override
-  public void mouseEntered(MouseEvent e) {
-
-  }
-
-  @Override
-  public void mouseExited(MouseEvent e) {
-
-  }
-
-  @Override
-  public void addViewEventListener(IViewListener listener) {
-    this.listeners.add(listener);
-  }
-
   @Override
   public void renderMessage(String message) throws IOException {
 
@@ -573,15 +707,9 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
 
   }
 
-  protected void emitLoadEvent() {
+  protected void emitMakeCurrentEvent(String nameOfButton) {
     for (IViewListener listener : listeners) {
-      listener.handleLoadEvent();
-    }
-  }
-
-  protected void emitMakeCurrentEvent() {
-    for (IViewListener listener : listeners) {
-      listener.handleMakeCurrentEvent();
+      listener.handleMakeCurrentEvent(nameOfButton);
     }
   }
 
@@ -609,9 +737,9 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     }
   }
 
-  protected void emitCreateLayerEvent() {
+  protected void emitCreateLayerEvent(String layerName) {
     for (IViewListener listener : listeners) {
-      listener.handleCreateLayerEvent();
+      listener.handleCreateLayerEvent(layerName);
     }
   }
 
@@ -621,15 +749,15 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     }
   }
 
-  protected void emitLoadLayerEvent() {
+  protected void emitLoadLayerEvent(String filename) {
     for (IViewListener listener : listeners) {
-      listener.handleLoadLayerEvent();
+      listener.handleLoadLayerEvent(filename);
     }
   }
 
-  protected void emitLoadScriptEvent() {
+  protected void emitLoadScriptEvent(String txtFilename) {
     for (IViewListener listener : listeners) {
-      listener.handleLoadScriptEvent();
+      listener.handleLoadScriptEvent(txtFilename);
     }
   }
 
@@ -639,9 +767,9 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     }
   }
 
-  protected void emitSaveAllEvent() {
+  protected void emitSaveAllEvent(String directory) {
     for (IViewListener listener : listeners) {
-      listener.handleSaveAllEvent();
+      listener.handleSaveAllEvent(directory);
     }
   }
 
@@ -657,27 +785,28 @@ public class MyWindow extends JFrame implements IGUIView, ActionListener, MouseL
     }
   }
 
-  protected void emitLoadAllEvent() {
+  protected void emitDownscaleEvent(IImage image) {
     for (IViewListener listener : listeners) {
-      listener.handleLoadAllEvent();
+      listener.handleDownscaleEvent(image);
     }
   }
 
-  protected void emitDownscaleEvent() {
+  protected void emitMosaicEvent(int numSeeds) {
     for (IViewListener listener : listeners) {
-      listener.handleDownscaleEvent();
+      listener.handleMosaicEvent(numSeeds);
     }
   }
 
-  protected void emitMosaicEvent() {
+  protected void emitCheckerboardEvent(int sizeOfTiles, int numTiles, int r1, int g1, int b1,
+      int r2, int g2, int b2) {
     for (IViewListener listener : listeners) {
-      listener.handleMosaicEvent();
+      listener.handleCheckerboardEvent(sizeOfTiles, numTiles, r1, g1, b1, r2, g2, b2);
     }
   }
 
-  protected void emitCheckerboardEvent() {
+  protected void emitCheckerboardDefaultColorEvent(int sizeOfTiles, int numTiles) {
     for (IViewListener listener : listeners) {
-      listener.handleCheckerboardEvent();
+      listener.handleCheckerboardDefaultColorEvent(sizeOfTiles, numTiles);
     }
   }
 }

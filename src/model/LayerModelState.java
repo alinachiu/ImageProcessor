@@ -2,6 +2,8 @@ package model;
 
 import model.layer.ILayer;
 import model.layer.ILayerModel;
+import model.image.IImage;
+
 
 /**
  * Represents an object that gets the current state of a given layer model.
@@ -27,7 +29,21 @@ public class LayerModelState implements ILayerModelState {
 
   @Override
   public ILayer getCurrentLayer() throws IllegalArgumentException {
-    return this.model.getCurrentLayer();
+    try {
+      return this.model.getCurrentLayer();
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  @Override
+  public IImage getTopmostVisibleLayerImage() throws IllegalArgumentException {
+    for (int i = getNumLayers() - 1; i >= 0; i--) {
+      if (getLayer(i).isVisible() && getLayer(i).getImage() != null) {
+        return getLayer(i).getImage();
+      }
+    }
+    return null;
   }
 
   @Override

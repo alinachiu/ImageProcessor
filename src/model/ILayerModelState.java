@@ -1,7 +1,7 @@
 package model;
 
 import model.layer.ILayer;
-
+import model.image.IImage;
 /**
  * This interface represents different operations that a layer model must support to return various
  * aspects of its state. This interface does not provide any operations to mutate the state of a
@@ -23,6 +23,14 @@ public interface ILayerModelState {
    * @throws IllegalArgumentException if there is no current layer
    */
   ILayer getCurrentLayer() throws IllegalArgumentException;
+
+  /**
+   * Gets the topmost visible layer in the model, if it exists
+   *
+   * @return the current layer
+   * @throws IllegalArgumentException if there is no current layer
+   */
+  IImage getTopmostVisibleLayerImage() throws IllegalArgumentException;
 
   /**
    * Gets the layer at a given index.

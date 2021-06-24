@@ -1,12 +1,7 @@
 package controller;
 
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.function.Function;
+import model.image.IImage;
 import model.layer.ILayerModel;
-import utils.AdditionalControllerUtils;
 import view.IGUIView;
 import view.IViewListener;
 
@@ -21,7 +16,6 @@ public class GraphicalImageProcessingController implements IImageProcessingContr
   private final ILayerModel model;
   private final IGUIView view;
 
-
   public GraphicalImageProcessingController(ILayerModel model, IGUIView view)
       throws IllegalArgumentException {
     if (model == null || view == null) {
@@ -35,158 +29,93 @@ public class GraphicalImageProcessingController implements IImageProcessingContr
 
   @Override
   public void processImage() {
-//     actionPerformed();
-  }
-
-  public void actionPerformed(ActionEvent event) {
-    String actionCommand = event.getActionCommand();
-    Scanner in = new Scanner(actionCommand);
-    Map<String, Function<Scanner, IPhotoCommands>> knownCommands = AdditionalControllerUtils
-        .getKnownCommands();
-    Function<Scanner, IPhotoCommands> functionCommand;
-
-    if (actionCommand.equalsIgnoreCase("q") || actionCommand.equalsIgnoreCase("quit")) {
-      return;
-    }
-    functionCommand = knownCommands.getOrDefault(actionCommand, null);
-
-    if (functionCommand != null) {
-      try {
-        this.runCommandBasedOnFunction(functionCommand, in);
-      } catch (IllegalArgumentException e) {
-        this.attemptAppend("Invalid command! Try again! " + e.getMessage() + "\n");
-      }
-    } else {
-      this.attemptAppend("Invalid input!\n");
-    }
+// TODO figure out
   }
 
   @Override
-  public void handleLoadEvent() {
-    //new LoadSingleCommand();
-  }
-
-  @Override
-  public void handleMakeCurrentEvent() {
-    //new SetCurrentCommand();
+  public void handleMakeCurrentEvent(String nameOfButton) {
+    new SetCurrentCommand(nameOfButton).runCommand(model);
   }
 
   @Override
   public void handleSepiaEvent() {
-    new SepiaCommand();
+    new SepiaCommand().runCommand(model);
   }
 
   @Override
   public void handleGrayscaleEvent() {
-    new GrayscaleCommand();
+    new GrayscaleCommand().runCommand(model);
   }
 
   @Override
   public void handleBlurEvent() {
-    new BlurCommand();
+    new BlurCommand().runCommand(model);
   }
 
   @Override
   public void handleSharpenEvent() {
-    new SharpenCommand();
+    new SharpenCommand().runCommand(model);
   }
 
   @Override
-  public void handleCreateLayerEvent() {
-    new CreateImageLayerCommand(view.getData("layerName"));
+  public void handleCreateLayerEvent(String layerName) {
+    new CreateImageLayerCommand(layerName).runCommand(model);
   }
 
   @Override
   public void handleRemoveLayerEvent() {
-    new RemoveImageLayerCommand(model.getCurrentLayer().getName());
+    new RemoveImageLayerCommand(model.getCurrentLayer().getName()).runCommand(model);
   }
 
   @Override
-  public void handleLoadLayerEvent() {
-    //new LoadSingleCommand();
+  public void handleLoadLayerEvent(String filename) {
+    new LoadSingleCommand(filename).runCommand(model);
   }
 
   @Override
-  public void handleLoadAllEvent() {
-    //new LoadAllCommand();
-  }
-
-  @Override
-  public void handleLoadScriptEvent() {
-
+  public void handleLoadScriptEvent(String txtFilename) {
+    new LoadAllCommand(txtFilename).runCommand(model);
   }
 
   @Override
   public void handleSaveTopmostVisibleLayerEvent() {
-    new SaveSingleCommand();
+    new SaveSingleCommand().runCommand(model);
   }
 
   @Override
-  public void handleSaveAllEvent() {
-    //new SaveAllCommand();
+  public void handleSaveAllEvent(String desiredDir) {
+    new SaveAllCommand(desiredDir).runCommand(model);
   }
 
   @Override
   public void handleMakeLayerInvisibleEvent() {
-    new MakeInvisibleCommand(model.getCurrentLayer().getName());
+    new MakeInvisibleCommand(model.getCurrentLayer().getName())
+        .runCommand(model); // TODO change this to not only work for current layer
   }
 
   @Override
   public void handleMakeLayerVisibleEvent() {
-     new MakeVisibleCommand(model.getCurrentLayer().getName());
+    new MakeVisibleCommand(model.getCurrentLayer().getName()).runCommand(model);
   }
 
   @Override
-  public void handleDownscaleEvent() {
-
+  public void handleDownscaleEvent(IImage image) {
+    new DownscalingCommand(image).runCommand(model);
   }
 
   @Override
-  public void handleMosaicEvent() {
-
+  public void handleMosaicEvent(int numSeeds) {
+    new MosaicCommand(numSeeds).runCommand(model);
   }
 
   @Override
-  public void handleCheckerboardEvent() {
-
+  public void handleCheckerboardEvent(int sizeOfTiles, int numTiles, int r1, int g1, int b1, int r2,
+      int g2, int b2) {
+    new CreateImageCommand(sizeOfTiles, numTiles, r1, g1, b1, r2, g2, b2).runCommand(model);
   }
 
-
-  /**
-   * Runs the correct command based on a given function object and a scanner.
-   *
-   * @param functionCommand the given function command associated with
-   * @param in              the scanner associated with the controller
-   * @throws IllegalStateException if writing to the Appendable fails
-   */
-  private void runCommandBasedOnFunction(Function<Scanner, IPhotoCommands> functionCommand,
-      Scanner in) throws IllegalStateException {
-    IPhotoCommands command = functionCommand.apply(in);
-    command.runCommand(this.model);
-
-    try {
-      this.view.renderLayerState();
-    } catch (IOException e) {
-      throw new IllegalStateException("Writing to the Appendable object used by it fails");
-    }
-  }
-
-  /**
-   * Tries to append a given string to this appendable, if possible.
-   *
-   * @param str the given string to be appended
-   * @throws IllegalStateException    if writing to the Appendable throws an IOException
-   * @throws IllegalArgumentException if the given string is null.
-   */
-  private void attemptAppend(String str) throws IllegalStateException {
-    if (str == null) {
-      throw new IllegalArgumentException("String is null");
-    }
-    try {
-      this.view.renderMessage(str);
-    } catch (IOException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Writing to the Appendable object used by it fails");
-    }
+  @Override
+  public void handleCheckerboardDefaultColorEvent(int sizeOfTiles, int numTiles) {
+    new CreateImageDefaultCommand(sizeOfTiles, numTiles).runCommand(model);
   }
 }

@@ -1,23 +1,41 @@
 package view;
 
+import model.image.IImage;
+
 // TODO javadocs
 public interface IViewListener {
-  void handleLoadEvent();
-  void handleMakeCurrentEvent();
+
+  void handleMakeCurrentEvent(String nameOfButton);
+
   void handleSepiaEvent();
+
   void handleGrayscaleEvent();
+
   void handleBlurEvent();
+
   void handleSharpenEvent();
-  void handleCreateLayerEvent();
+
+  void handleCreateLayerEvent(String layerName);
+
   void handleRemoveLayerEvent();
-  void handleLoadLayerEvent();
-  void handleLoadAllEvent();
-  void handleLoadScriptEvent();
+
+  void handleLoadLayerEvent(String filename);
+
+  void handleLoadScriptEvent(String txtFilename);
+
   void handleSaveTopmostVisibleLayerEvent();
-  void handleSaveAllEvent();
+
+  void handleSaveAllEvent(String desiredDir);
+
   void handleMakeLayerInvisibleEvent();
+
   void handleMakeLayerVisibleEvent();
-  void handleDownscaleEvent();
-  void handleMosaicEvent();
-  void handleCheckerboardEvent();
+
+  void handleDownscaleEvent(IImage image);
+
+  void handleMosaicEvent(int numSeeds);
+
+  void handleCheckerboardEvent(int sizeOfTiles, int numTiles, int r1, int g1, int b1, int r2, int g2, int b2);
+
+  void handleCheckerboardDefaultColorEvent(int sizeOfTiles, int numTiles);
 }

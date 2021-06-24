@@ -12,7 +12,7 @@ public class MosaicCommand implements IPhotoCommands {
 
   @Override
   public void runCommand(ILayerModel m) throws IllegalArgumentException {
-    
+    // TODO 
   }
 }
 

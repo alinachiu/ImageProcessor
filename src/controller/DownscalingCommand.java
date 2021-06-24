@@ -13,6 +13,6 @@ public class DownscalingCommand implements IPhotoCommands {
 
   @Override
   public void runCommand(ILayerModel m) throws IllegalArgumentException {
-
+    // TODO do this
   }
 }
