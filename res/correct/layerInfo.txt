@@ -1,0 +1,3 @@
+0, res/correct/flower.jpeg, true
+1, res/correct/flower.png, false
+2, noimage, false

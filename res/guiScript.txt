@@ -1,0 +1,17 @@
+create first
+create second
+create third
+remove first
+loadall res/correct/layerInfo.txt
+saveall multiLayeredImage
+current flower
+grayscale
+invisible res/correct/flower.jpeg
+current res/correct/flower.jpeg
+visible res/correct/flower.jpeg
+current flower
+sharpen
+sepia
+invisible third
+saveall multiLayeredImage
+quit

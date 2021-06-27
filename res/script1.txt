@@ -1,0 +1,46 @@
+hello
+create first
+remove first
+current first
+sepia
+create first
+current first
+create second
+create third
+createimage 4 3 10 10 10 20 20 20
+create fourth
+load res/check.ppm
+colortransform res/check.ppm sepie
+colortransform res/check.ppm sepia
+colortransform res/check.pm grayscale
+remove second
+current second
+remove Checkerboard
+remove first
+overload res/puppy.ppm
+load res/puppy.ppm
+loadall res/correct/layerInfo.txt
+blur
+save
+saveall multiLayeredImage
+current third
+grayscale
+invisible res/correct/flower.jpeg
+current res/correct/flower.jpeg
+visible res/correct/flower.jpeg
+current correct/flower.jpeg
+filter correct/flower.png sepia
+filter correct/flower.png blur
+sharpen
+sepia
+bokeh
+loadall badLayerInfo.txt
+load puppy.ppm
+invisible third
+current fakeLayer
+createdefaultimage 4 3
+saveall multiLayeredImage
+saveall multiLayeredImageUpdated
+loadall nothing
+quite
+quit

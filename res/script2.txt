@@ -1,0 +1,44 @@
+create first
+create second
+create third
+current second
+remove second
+remove fake
+create first
+load check.ppm
+load fake.jpeg
+blur
+sepia
+grayscale
+save newImage
+current third
+create fourth
+remove fourth
+load puppy.ppm
+save
+visible fake
+invisible fake
+loadall fake.txt
+createimage 1 2 10000 -10 10 20 30 40
+createdefaultimage -1 2
+colortransform fake.jpeg sepia
+filter fake.jpeg blur
+colortransform puppy.ppm fake
+filter puppy.ppm fake
+sharpen
+grayscale
+loadall correct/layerInfo.txt
+invisible third
+createdefaultimage 1 2
+createimage 1 2 3 4 5 100 244 10
+visible third
+invisible third
+visible third
+fake command
+current fake
+loadall badLayerInfo.txt
+loadall nonExistent.txt
+colortransform puppy.ppm sepia
+filter puppy.ppm blur
+saveall newDir
+quIt
