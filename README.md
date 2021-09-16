@@ -357,10 +357,6 @@ java -jar HW7.jar -interactive
 The ImageUtil class was used to help import images based on their filename. The AdditionalImageUtil
 class was also used to help import and export images.
 
-## Changes made based on Grader Feedback
-- Layer class now returns a deep copy of an Image when calling getImage()
-- merged import PNG and JPEG manager classes into the same class to avoid duplicated code
-
 ## Sources for Images:
 
 - Dog Image: DL, JackieLou. “Puppy Lying Down.” Pixabay, 13 Nov. 2018,
