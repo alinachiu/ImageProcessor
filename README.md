@@ -6,6 +6,27 @@ transformations (monochrome and sepia), creating images programmatically (checke
 importing/exporting images in PPM format. Note: to figure out how to use this project with the terminal,
 read the USEME.md file.
 
+## The JAR File
+If not already placed there, please run the JAR file from the res folder. The JAR file can be run using user 
+input by following the commands in the USEME or using a given script. 
+Three sample scripts are given in the res folder that can be used to see all possible cases for this controller.
+NOTE: script1 and script2 have errors in them to demonstrate the possible errors present in the program, 
+to have a fully functioning program script run with only a few pop up error messages in the interactive view, 
+run the guiScript.txt from the given res directory and click ok to exit out of the error messages that will
+appear.
+
+The JAR file can be run in three ways using the command line/terminal as seen below:
+```Java
+// using a script
+java -jar HW7.jar -script path-of-script-file
+
+// using user input
+java -jar HW7.jar -text // then input commands as stated in USEME
+
+// using the GUI
+java -jar HW7.jar -interactive
+```
+
 ## Chosen Image Representation
 
 For the purposes of this program, images are represented as a 2D array of pixels as well as its
@@ -329,27 +350,6 @@ export.export();
 IImage dog = new PPMImage("res/puppy.ppm", new StringWriter());
 IExport export = new PPMExport(dog);
 export.export();
-```
-
-## The JAR File
-If not already placed there, please run the JAR file from the res folder. The JAR file can be run using user 
-input by following the commands in the USEME or using a given script. 
-Three sample scripts are given in the res folder that can be used to see all possible cases for this controller.
-NOTE: script1 and script2 have errors in them to demonstrate the possible errors present in the program, 
-to have a fully functioning program script run with only a few pop up error messages in the interactive view, 
-run the guiScript.txt from the given res directory and click ok to exit out of the error messages that will
-appear.
-
-The JAR file can be run in three ways using the command line/terminal as seen below:
-```Java
-// using a script
-java -jar HW7.jar -script path-of-script-file
-
-// using user input
-java -jar HW7.jar -text // then input commands as stated in USEME
-
-// using the GUI
-java -jar HW7.jar -interactive
 ```
 
 ## Note about the ImageUtil and AdditionalImageUtil classes
