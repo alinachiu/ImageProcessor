@@ -3,8 +3,7 @@
 ImageProcessing is a Java program which deals with image manipulation and enhancement. The model can
 perform actions such as filtering images (blurring and sharpening), creating images with color
 transformations (monochrome and sepia), creating images programmatically (checkerboards), and
-importing/exporting images in PPM, JPEG, and PNG format. Note: to figure out how to use this project with the terminal,
-read the USEME.md file.
+importing/exporting images in PPM, JPEG, and PNG format. Built using the Command and Model-View-Controller design patterns. Tested with JUnit. Note: to figure out how to use this project with the terminal, read the USEME.md file.
 
 ## The JAR File
 If not already placed there, please run the JAR file from the res folder. The JAR file can be run using user 
